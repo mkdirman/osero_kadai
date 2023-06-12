@@ -30,7 +30,6 @@ class reversi_game():
 
           available_list=self.get_available_list(self.board,turn)
           self.make_board(self.board,available_list)
-          #print(available_list)
           if available_list==[]:
 
               if self.get_available_list(self.board,-turn)==[]:
