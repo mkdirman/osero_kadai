@@ -10,6 +10,7 @@ class reversi_board():
         self.board[5,5]=1
         self.board[4,5]=-1
         self.board[5,4]=-1
+        self.available_list=[]
 
         self.ax=None
 
@@ -19,7 +20,7 @@ class reversi_board():
     def show_board(self,color=1):
         available_list=self.get_available_list(color)
         self.make_baseboard()
-        self.put_coin(available_list)
+        self.put_all()
 
         plt.xlim(0,720)
         plt.ylim(0,720)
@@ -30,34 +31,51 @@ class reversi_board():
     def make_baseboard(self):
         i=0
         fig,self.ax=plt.subplots()
-        for y in range(9):  
-            for x in range(9): 
-                y_=y*80
-                x_=x*80
-                if (x==0)|(y==8):
-                    if i==8:
-                      point=None
-                      i+=1
-                    else:
-                      point=abs(8-i)
-                      i+=1
-                    self.ax.text(x_+40,y_+40,point,ha="center",va="center",fontsize=10)                   
-                else:
-                    rectangle = plt.Rectangle((x_,y_),80,80,edgecolor="black",facecolor="green")
-                    self.ax.add_patch(rectangle)
+        for y in range(9):
+            for x in range(9):
+                self.show_base(x,y,i)
 
-    def put_coin(self,available_list):
+    def show_base(self,x,y,i):
+        x_,y_=self.change_range(x,y)
+        if (x==0)|(y==8):
+            self.show_number(x_,y_,i)
+        else:
+            self.show_bottom(x_,y_)
+
+    def change_range(self,x,y):
+        return  y*80,x*80
+
+    def show_number(self,x_,y_,i):
+        if i==8:
+            point=None
+            i+=1
+        else:
+            point=abs(8-i)
+            i+=1
+            self.ax.text(x_+40,y_+40,point,ha="center",va="center",fontsize=10)
+
+    def show_bottom(self,x_,y_):
+        rectangle = plt.Rectangle((x_,y_),80,80,edgecolor="black",facecolor="green")
+        self.ax.add_patch(rectangle)
+
+    def put_all(self):
         for x in range(9):
             for y in range(9):
-                if int(self.board[x][y])==1:
-                    circle = plt.Circle((x*80+40,680-y*80),30,edgecolor="black",facecolor="black")
-                    self.ax.add_patch(circle)
-                elif int(self.board[x][y])==-1:
-                    circle = plt.Circle((x*80+40,680-y*80),30,edgecolor="black",facecolor="white")
-                    self.ax.add_patch(circle)
-                elif (x,y) in available_list:
-                    circle = plt.Circle((x*80+40,680-y*80),10,edgecolor="white",facecolor="white")
-                    self.ax.add_patch(circle)
+                self.put_coin(x,y)
+                self.put_available_point(x,y)
+
+    def put_coin(self,x,y):
+        if int(self.board[x][y])==1:
+            circle = plt.Circle((x*80+40,680-y*80),30,edgecolor="black",facecolor="black")
+            self.ax.add_patch(circle)
+        elif int(self.board[x][y])==-1:
+            circle = plt.Circle((x*80+40,680-y*80),30,edgecolor="black",facecolor="white")
+            self.ax.add_patch(circle)
+
+    def put_available_point(self,x,y):
+        if (x,y) in self.available_list:
+            circle = plt.Circle((x*80+40,680-y*80),10,edgecolor="white",facecolor="white")
+            self.ax.add_patch(circle)
 
     def update_board(self,x,y,color):
         self.board[x,y]=color
@@ -85,7 +103,7 @@ class reversi_board():
                 self.board[x:x+i,y]=color
                 break
             elif self.board[x+i,y]==0:
-                break 
+                break
             else:
                 continue
 
@@ -107,7 +125,7 @@ class reversi_board():
                 break
             else:
                 continue
-    
+
     def update_diagonal1(self,x,y,color):
         for i in range(1,min(x,y)+1):
             if (x-i<1)|(y-i<1):
@@ -123,7 +141,7 @@ class reversi_board():
 
         for i in range(1,min(9-x,9-y)+1):
             if (x+i>8)|(y+i>8):
-                break         
+                break
             if self.board[x+i,y+i]==color:
                 for c in range(i):
                     self.board[x+c,y+c]=color
@@ -159,16 +177,16 @@ class reversi_board():
                 continue
 
     def get_available_list(self,color):
-        available_list=[]
+        self.available_list=[]
 
         for y in range(1,9):
             for x in range(1,9):
                 if self.board[x,y]==0:
 
                     if self.judge(x,y,color)==True:
-                        available_list.append((x,y))
+                        self.available_list.append((x,y))
 
-        return available_list
+        return self.available_list
 
     def judge(self,x,y,color):
         board_p=self.board.copy()
@@ -219,7 +237,7 @@ class player(reversi_board):
               continue
 
           return self.x,self.y
-      
+
   def check_none(self):
       if (self.x=='')|(self.y==''):
           print('整数を入力してね！')
@@ -241,7 +259,7 @@ class player(reversi_board):
 
       if (self.x<1)|(self.x>8)|(self.y<1)|(self.y>8):
           print('1-8で入力してね！！')
-          return False 
+          return False
       elif self.board[self.x,self.y]!=0:
           print('そこはもう埋まってる！！')
           return False
@@ -249,7 +267,7 @@ class player(reversi_board):
           return True
 
   def check_available(self,board):
-      
+
     return self.input_judge(self.x,self.y,self.color,board)
 
 
@@ -265,19 +283,19 @@ class game():
         self.y=0
         self.black_score=0
         self.white_score=0
-    
+
     def initialize_game(self):
         self.game_board.initialize_board()
         self.p_b.initialize()
         self.p_w.initialize()
-        
+
         self.turn=1
         self.x=0
         self.y=0
         self.black_score=0
         self.white_score=0
 
-    def play(self):
+    def main(self):
         self.initialize_game()
 
         while True:
@@ -288,16 +306,16 @@ class game():
             self.input_main()
             self.game_board.update_board(self.x,self.y,self.turn)
             self.turn=-self.turn
-      
+
     def input_main(self):
         if self.turn==1:
             self.x,self.y=self.p_b.input_point(self.game_board.board)
         else:
             self.x,self.y=self.p_w.input_point(self.game_board.board)
-    
+
     def check_available(self):
         if (self.game_board.get_available_list(self.turn)==[]):
-            print('置けないから相手のターンになるよ')           
+            print('置けないから相手のターンになるよ')
             self.turn=-self.turn
 
     def check_gameover(self):
