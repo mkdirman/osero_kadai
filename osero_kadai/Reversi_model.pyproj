@@ -3,13 +3,14 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>44f882cf-e417-4b4d-a454-2f4f1ddea67e</ProjectGuid>
-    <ProjectHome>.</ProjectHome>
-    <StartupFile>osero_kadai.py</StartupFile>
+    <ProjectHome>
+    </ProjectHome>
+    <StartupFile>main.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
-    <Name>osero_kadai</Name>
+    <Name>Reversi_model</Name>
     <RootNamespace>osero_kadai</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -21,7 +22,10 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="osero_kadai.py" />
+    <Compile Include="Game.py" />
+    <Compile Include="main.py" />
+    <Compile Include="Player.py" />
+    <Compile Include="ReversiBoard.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
