@@ -16,9 +16,9 @@ class Player():
               self.y= input('y座標を入力してね(1-8):')
 
               try:
-                  self.check_none
-                  self.check_int
-                  self.check_range
+                  self.is_none
+                  self.is_int
+                  self.is_range
               except ValueError as e:
                   print(str(e))
                   continue
@@ -26,12 +26,12 @@ class Player():
               return self.x, self.y
 
       @property
-      def check_none(self):
+      def is_none(self):
           if (self.x== '')|(self.y== ''):
               raise ValueError('整数で入力してね！')
 
       @property
-      def check_int(self):
+      def is_int(self):
           try:
               self.x = int(self.x)
               self.y = int(self.y)
@@ -39,7 +39,7 @@ class Player():
               raise ValueError('整数で入力してね！')
 
       @property
-      def check_range(self):
+      def is_range(self):
 
           if (self.x < 1)|(self.x > 8)|(self.y < 1)|(self.y > 8):
               raise ValueError('1-8で入力してね！')

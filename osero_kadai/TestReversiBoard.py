@@ -1,5 +1,9 @@
 import unittest
+import numpy as np
+import matplotlib.pyplot as plt
+
 from ReversiBoard import ReversiBoard
+
 
 class TestReversiBoard(unittest.TestCase):
 
