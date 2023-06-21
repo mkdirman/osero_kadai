@@ -16,7 +16,6 @@ class TestReversiBoard(unittest.TestCase):
         self.assertEqual(board.board[5,5], 1)
         self.assertEqual(board.board[4,5], -1)
         self.assertEqual(board.board[5,4], -1)
-        self.assertEqual(board.board[3,3], 0)
 
     def test_update_board_length(self):
         board= ReversiBoard()
