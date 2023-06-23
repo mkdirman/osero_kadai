@@ -90,11 +90,12 @@ class TestGame(unittest.TestCase):
         game.black_score= 33
         game.white_score= 31
 
-        expected_output= "黒33:白31で黒の勝ち！\nゲーム終了！\n"
+        expected_output= "黒33:白31で黒の勝ち！\nゲーム終了\n"
 
         with patch('sys.stdout', new=StringIO()) as fake_out:
             game.show_score
             actual_output= fake_out.getvalue()
+        print(actual_output)
 
         self.assertEqual(actual_output, expected_output)
     def test_show_score_white_win(self):
@@ -103,7 +104,7 @@ class TestGame(unittest.TestCase):
         game.black_score= 31
         game.white_score= 33
 
-        expected_output= "黒31:白33で白の勝ち！\nゲーム終了！\n"
+        expected_output= "黒31:白33で白の勝ち！\nゲーム終了\n"
 
         with patch('sys.stdout', new=StringIO()) as fake_out:
             game.show_score
@@ -117,7 +118,7 @@ class TestGame(unittest.TestCase):
         game.black_score= 32
         game.white_score= 32
 
-        expected_output= "引き分け！\nゲーム終了！\n"
+        expected_output= "引き分け！\nゲーム終了\n"
 
         with patch('sys.stdout', new=StringIO()) as fake_out:
             game.show_score

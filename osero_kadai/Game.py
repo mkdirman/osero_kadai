@@ -1,3 +1,5 @@
+import numpy as np
+
 from Player import Player
 from ReversiBoard import ReversiBoard
 
@@ -70,8 +72,8 @@ class Game():
 
     @property
     def get_score(self):
-        self.black_score= np.sum(self.board== 1)
-        self.white_score= np.sum(self.board== -1)
+        self.black_score= np.sum(self.game_board.board== 1)
+        self.white_score= np.sum(self.game_board.board== -1)
 
     @property
     def show_score(self):

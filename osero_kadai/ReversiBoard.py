@@ -81,13 +81,9 @@ class ReversiBoard():
 
     def update_board(self, x, y, color):
         self.board[x,y]= color
-        #�c����
         self.update_length(x, y, color)
-        #������
         self.update_width(x, y, color)
-        #�΂ߐ���-����E�E��
         self.update_diagonal1(x, y, color)
-        #�΂ߐ���-�����E�E��
         self.update_diagonal2(x, y, color)
 
     def update_length(self, x, y, color):

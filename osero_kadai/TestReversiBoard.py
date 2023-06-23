@@ -10,7 +10,7 @@ class TestReversiBoard(unittest.TestCase):
     def test_initialize_board(self):
         board= ReversiBoard()
 
-        board.initialize_board()
+        board.initialize_board
 
         self.assertEqual(board.board[4,4], 1)
         self.assertEqual(board.board[5,5], 1)

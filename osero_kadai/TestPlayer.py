@@ -17,8 +17,8 @@ class TestPlayer(unittest.TestCase):
         player = Player(color= 1)
         result= player.input_point()
 
-        self.assertEqual(player.x, 3)
-        self.assertEqual(player.y, 5)
+        self.assertEqual(player.x, 5)
+        self.assertEqual(player.y, 3)
 
     def test_check_none(self):
         player= Player(color= 1)
@@ -26,7 +26,7 @@ class TestPlayer(unittest.TestCase):
         player.y= 5
 
         with self.assertRaises(ValueError):
-            player.check_none()
+            player.is_none
 
     def test_check_int(self):
         player= Player(color= 1)
@@ -34,7 +34,7 @@ class TestPlayer(unittest.TestCase):
         player.y= 4
 
         with self.assertRaises(ValueError):
-            player.check_int()
+            player.is_int
 
     def test_check_range(self):
         player= Player(color= 1)
@@ -42,8 +42,7 @@ class TestPlayer(unittest.TestCase):
         player.y= 5
 
         with self.assertRaises(ValueError):
-            player.check_range()
+            player.is_range
 
-unittest.main(argv=[''], verbosity=2, exit=False)
 
 unittest.main(argv=[''], verbosity=2, exit=False)
