@@ -1,13 +1,29 @@
 
-import unittest
-import numpy as np
+from models.GameModel import Game
 
-from TestGame import TestGame
-from TestReversiBoard import TestReversiBoard
-from TestPlayer import TestPlayer
-from Game import Game
+game=Game()
 
-#ReversiModel=Game()
-#ReversiModel.main()
 
-unittest.main(argv=[''], verbosity=2, exit=False)
+def main():
+    game.set_up_game
+
+    while game.is_continue:
+
+        game.is_available
+
+        game.show_board
+        try:
+            game.put_stone
+        except ValueError as e:
+            print(str(e))
+            continue
+
+        game.update_board
+        game.change_turn
+
+    game.show_score
+
+if __name__ == "__main__":
+    main()
+
+

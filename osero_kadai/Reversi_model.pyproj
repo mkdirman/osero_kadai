@@ -22,14 +22,20 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Game.py" />
+    <Compile Include="models\GameModel.py" />
     <Compile Include="main.py" />
-    <Compile Include="Player.py" />
-    <Compile Include="ReversiBoard.py" />
+    <Compile Include="models\PlayerModel.py" />
+    <Compile Include="models\ReversiBoardModel.py" />
+    <Compile Include="models_test\TestCpuPlayerModel.py" />
     <Compile Include="test.py" />
-    <Compile Include="TestGame.py" />
-    <Compile Include="TestPlayer.py" />
-    <Compile Include="TestReversiBoard.py" />
+    <Compile Include="models_test\TestGameModel.py" />
+    <Compile Include="models_test\TestPlayerModel.py" />
+    <Compile Include="models_test\TestReversiBoardModel.py" />
+    <Compile Include="models\CpuPlayerModel.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="models\" />
+    <Folder Include="models_test\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

@@ -1,8 +1,8 @@
-import unittest
 import numpy as np
 import matplotlib.pyplot as plt
+import unittest
 
-from ReversiBoard import ReversiBoard
+from models.ReversiBoardModel import ReversiBoard
 
 
 class TestReversiBoard(unittest.TestCase):
@@ -10,7 +10,6 @@ class TestReversiBoard(unittest.TestCase):
     def test_initialize_board(self):
         board= ReversiBoard()
 
-        board.initialize_board
 
         self.assertEqual(board.board[4,4], 1)
         self.assertEqual(board.board[5,5], 1)
@@ -122,10 +121,8 @@ class TestReversiBoard(unittest.TestCase):
         with self.assertRaises(ValueError):
             board.input_judge(3, 2, 1)
 
-    def test_is_0(self):
+    def test_already_put(self):
         board= ReversiBoard()
 
         with self.assertRaises(ValueError):
-            board.is_0(4, 5)
-
-unittest.main(argv=[''], verbosity=2, exit=False)
+            board.already_put(4, 5)

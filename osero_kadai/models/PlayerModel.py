@@ -9,6 +9,7 @@ class Player():
       def initialize(self):
           self.__init__(self.color)
 
+      @property
       def input_point(self):
           while True:
 

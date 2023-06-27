@@ -1,13 +1,11 @@
 import unittest
 
-from Player import Player
+from models.PlayerModel import Player
 
 class TestPlayer(unittest.TestCase):
 
     def test_initialize(self):
         player = Player(color= 1)
-
-        player.initialize
 
         self.assertEqual(player.x, 0)
         self.assertEqual(player.y, 0)
@@ -15,6 +13,8 @@ class TestPlayer(unittest.TestCase):
 
     def test_input_point(self):
         player = Player(color= 1)
+        print('x=5 and y=3')
+
         result= player.input_point()
 
         self.assertEqual(player.x, 5)
@@ -43,6 +43,3 @@ class TestPlayer(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             player.is_range
-
-
-unittest.main(argv=[''], verbosity=2, exit=False)

@@ -14,14 +14,9 @@ class ReversiBoard():
 
         self.ax=None
 
-    @property
-    def initialize_board(self):
-        self.__init__()
-
-    def show_board(self, color= 1):
-        available_list=self.get_available_list(color)
-        self.make_baseboard
-        self.put_all
+    def show_board(self, color=1):
+        self._make_baseboard
+        self._put_all
 
         plt.xlim(0, 720)
         plt.ylim(0, 720)
@@ -30,37 +25,37 @@ class ReversiBoard():
         plt.show()
 
     @property
-    def make_baseboard(self):
+    def _make_baseboard(self):
         self.i=0
-        fig,self.ax=plt.subplots()
+        _, self.ax=plt.subplots()
         for y in range(9):
             for x in range(9):
                 self.show(x, y)
 
-    def show(self,x,y):
+    def show(self, x, y):
         y_=y*80
         x_=x*80
         if (x==0)|(y==8):
-           self.show_number(x_, y_)
+            self._show_number(x_, y_)
         else:
-            self.show_point(x_, y_)
+            self._show_point(x_, y_)
 
 
-    def show_number(self, x_, y_):
+    def _show_number(self, x_, y_):
         if self.i== 8:
             point=None
             self.i+= 1
         else:
             point=abs(8-self.i)
             self.i+= 1
-        self.ax.text(x_+40, y_+40, point, ha= "center", va= "center", fontsize= 10)
+        self.ax.text(x_+40, y_+40, point, ha="center", va="center", fontsize=10)
 
-    def show_point(self, x_, y_):
-        rectangle = plt.Rectangle((x_, y_), 80, 80, edgecolor= "black", facecolor= "green")
+    def _show_point(self, x_, y_):
+        rectangle = plt.Rectangle((x_, y_), 80, 80, edgecolor="black", facecolor="green")
         self.ax.add_patch(rectangle)
 
     @property
-    def put_all(self):
+    def _put_all(self):
         for x in range(9):
             for y in range(9):
                 self.put_coin(x, y)
@@ -206,6 +201,6 @@ class ReversiBoard():
             raise ValueError('そこには置けないよ！')
         self.board= board_p
 
-    def is_0(self, x, y):
+    def already_put(self, x, y):
         if self.board[x,y]!= 0:
             raise ValueError('もう置かれてる！')
