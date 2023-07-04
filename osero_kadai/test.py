@@ -1,14 +1,14 @@
 import unittest
 
-from models_test.TestGameModel import TestGame
-from models_test.TestReversiBoardModel import TestReversiBoard
-from models_test.TestPlayerModel import TestPlayer
-from models_test.TestCpuPlayerModel import TestCpuPlayer
+from tests.test_game import TestGame,TestMode
+from tests.test_reversi_board import TestReversiBoard
+from tests.test_player import TestPlayer
+from tests.test_cpu_player import TestCpuPlayer
 
+Mode=TestMode
 Game=TestGame
 Board=TestReversiBoard
 Player=TestPlayer
 Cpu=TestCpuPlayer
-
 
 unittest.main(argv=[''], verbosity=2, exit=False)

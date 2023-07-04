@@ -1,6 +1,6 @@
 import unittest
 
-from models.CpuPlayerModel import CpuPlayer
+from models.cpu_player import CpuPlayer
 
 class TestCpuPlayer(unittest.TestCase):
 
@@ -31,6 +31,10 @@ class TestCpuPlayer(unittest.TestCase):
         x,y=player.input_point
 
         self.assertIn((x,y),[(5,3),(3,5),(4,6),(6,4)])
+
+
+
+
 
 
 

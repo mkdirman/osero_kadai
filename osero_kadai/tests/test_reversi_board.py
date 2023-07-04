@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import unittest
 
-from models.ReversiBoardModel import ReversiBoard
+from models.reversi_board import ReversiBoard
 
 
 class TestReversiBoard(unittest.TestCase):

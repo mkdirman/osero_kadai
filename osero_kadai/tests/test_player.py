@@ -1,6 +1,6 @@
 import unittest
 
-from models.PlayerModel import Player
+from models.player import Player
 
 class TestPlayer(unittest.TestCase):
 
@@ -15,7 +15,7 @@ class TestPlayer(unittest.TestCase):
         player = Player(color= 1)
         print('x=5 and y=3')
 
-        result= player.input_point()
+        result= player.input_point
 
         self.assertEqual(player.x, 5)
         self.assertEqual(player.y, 3)

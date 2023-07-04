@@ -1,10 +1,17 @@
 import numpy as np
 
-from models.PlayerModel import Player
-from models.ReversiBoardModel import ReversiBoard
-from models.CpuPlayerModel import CpuPlayer
+from models.player import Player
+from models.reversi_board import ReversiBoard
+from models.cpu_player import CpuPlayer
 
 import numpy as np
+from enum import Enum
+
+class Mode(Enum):
+    CPU='cpu'
+    FRIENDS='friends'
+    FIRST='先攻'
+    LATER='後攻'
 
 class Game():
 
@@ -17,14 +24,38 @@ class Game():
         self.black_score= 0
         self.white_score= 0
 
-        self.mode='cpu'
-        self.mode_turn='先攻'
+        self.mode=Mode.CPU.value
+        self.mode_turn=Mode.FIRST.value
 
     @property
     def set_mode(self):
         self._cpu_or_friends
-        if self.mode=='cpu':
+        if self.is_cpu:
             self._first_or_later
+
+    @property
+    def is_cpu(self):
+        return self.mode==Mode.CPU.value
+
+    @property
+    def is_friends(self):
+        return self.mode==Mode.FRIENDS.value
+
+    @property
+    def is_first(self):
+        return self.mode_turn==Mode.FIRST.value
+
+    @property
+    def is_later(self):
+        return self.mode_turn==Mode.LATER.value
+
+    @property
+    def is_cpu_or_friends(self):
+        return self.is_cpu | self.is_friends
+
+    @property
+    def is_first_or_later(self):
+        return self.is_first | self.is_later
 
     @property
     def _cpu_or_friends(self):
@@ -36,7 +67,7 @@ class Game():
 
     @property
     def set_players(self):
-        if self.mode== 'cpu':
+        if self.is_cpu:
             self.set_cpu_turn
         else:
             self.p_b= Player(color= 1)
@@ -44,7 +75,7 @@ class Game():
 
     @property
     def set_cpu_turn(self):
-        if self.mode_turn=='先攻':
+        if self.is_first:
             self.p_b= Player(color= 1)
             self.p_w= CpuPlayer(color= -1)
         else:
@@ -67,17 +98,17 @@ class Game():
 
     @property
     def is_valid_mode(self):
-        if (self.mode== 'cpu')|(self.mode== 'friends'):
+        if self.is_cpu_or_friends:
             print('{}モードで遊びます'.format(self.mode))
         else:
             raise ValueError('cpuかfriendsで選択してね')
 
     @property
     def is_valid_turn(self):
-        if (self.mode_turn== '先攻')|(self.mode_turn== '後攻'):
+        if self.is_first_or_later:
             print('さあ、ゲームを始めよう')
         else:
-            raise ValueError('先行か後攻で選択してね')
+            raise ValueError('先攻か後攻で選択してね')
 
     @property
     def put_stone(self):
@@ -92,8 +123,8 @@ class Game():
 
     @property
     def set_up_cpu_board(self):
-      if self.mode=='cpu':
-          if self.mode_turn=='先攻':
+      if self.is_cpu:
+          if self.is_first:
               self.p_w.set_available_lists(self.game_board.get_available_list(self.p_w.color))
           else:
               self.p_b.set_available_lists(self.game_board.get_available_list(self.p_b.color))

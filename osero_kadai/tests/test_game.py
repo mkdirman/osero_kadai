@@ -3,15 +3,26 @@ from unittest.mock import patch
 from io import StringIO
 import numpy as np
 
-from models.GameModel import Game
-from models.PlayerModel import Player
-from models.CpuPlayerModel import CpuPlayer
+from models.game import Mode,Game
+from models.player import Player
+from models.cpu_player import CpuPlayer
+from enum import Enum
+
+class TestMode(unittest.TestCase):
+
+    def init_value(self):
+
+        Mode.CPU='cpu'
+        Mode.FRIENDS='friends'
+        Mode.FIRST='先攻'
+        Mode.LATER='後攻'
+
+        self.assertEqual(Mode.CPU, 'cpu')
+        self.assertEqual(Mode.FRIENDS, 'friends')
+        self.assertEqual(Mode.FIRST, '先攻')
+        self.assertEqual(Mode.LATER, '後攻')
 
 class TestGame(unittest.TestCase):
-
-    def setUp(self):
-        game= Game()
-  
 
     def test_initialize_game(self):
 
@@ -65,6 +76,69 @@ class TestGame(unittest.TestCase):
         game._first_or_later
 
         self.assertEqual(game.mode_turn, '後攻')
+
+    def test_is_cpu(self):
+        game=Game()
+        game.mode='cpu'
+
+        self.assertTrue(game.is_cpu)
+
+        game.mode='friends'
+        self.assertFalse(game.is_cpu)
+
+
+    def test_is_friends(self):
+        game=Game()
+        game.mode='friends'
+
+        self.assertTrue(game.is_friends)
+
+        game.mode='cpu'
+        self.assertFalse(game.is_friends)
+
+
+    def test_is_first(self):
+        game=Game()
+        game.mode_turn='先攻'
+
+        self.assertTrue(game.is_first)
+
+        game.mode_turn='後攻'
+        self.assertFalse(game.is_first)
+        
+    def test_is_later(self):
+        game=Game()
+        game.mode_turn='後攻'
+
+        self.assertTrue(game.is_later)
+
+        game.mode_turn='先攻'
+        self.assertFalse(game.is_later)
+
+    def test_is_cpu_or_friends(self):
+        game=Game()
+        game.mode='cpu'
+
+        self.assertTrue(game.is_cpu_or_friends)
+
+        game.mode='friends'
+        self.assertTrue(game.is_cpu_or_friends)
+
+        game.mode='valid'
+        self.assertFalse(game.is_cpu_or_friends)
+
+    def test_is_first_or_later(self):
+        game=Game()
+        game.mode_turn='後攻'
+
+        self.assertTrue(game.is_first_or_later)
+
+        game.mode_turn='先攻'
+        self.assertTrue(game.is_first_or_later)
+
+        game.mode_turn='valid'
+        self.assertFalse(game.is_first_or_later)
+ 
 
     def test_set_cpu_turn_first(self):
         game= Game()
