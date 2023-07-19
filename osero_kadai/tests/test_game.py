@@ -3,7 +3,7 @@ from unittest.mock import patch
 from io import StringIO
 import numpy as np
 
-from models.game import Mode,Game
+from models.game import ModeGame,ModeTurn,Game
 from models.player import Player
 from models.cpu_player import CpuPlayer
 from enum import Enum
@@ -12,15 +12,15 @@ class TestMode(unittest.TestCase):
 
     def init_value(self):
 
-        Mode.CPU='cpu'
-        Mode.FRIENDS='friends'
-        Mode.FIRST='先攻'
-        Mode.LATER='後攻'
+        ModeGame.CPU='cpu'
+        ModeGame.FRIENDS='friends'
+        ModeTurn.FIRST='先攻'
+        ModeTurn.LATER='後攻'
 
-        self.assertEqual(Mode.CPU, 'cpu')
-        self.assertEqual(Mode.FRIENDS, 'friends')
-        self.assertEqual(Mode.FIRST, '先攻')
-        self.assertEqual(Mode.LATER, '後攻')
+        self.assertEqual(ModeGame.CPU, 'cpu')
+        self.assertEqual(ModeGame.FRIENDS, 'friends')
+        self.assertEqual(ModeTurn.FIRST, '先攻')
+        self.assertEqual(ModeTurn.LATER, '後攻')
 
 class TestGame(unittest.TestCase):
 

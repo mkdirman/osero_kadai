@@ -7,9 +7,11 @@ from models.cpu_player import CpuPlayer
 import numpy as np
 from enum import Enum
 
-class Mode(Enum):
+class ModeGame(Enum):
     CPU='cpu'
     FRIENDS='friends'
+
+class ModeTurn(Enum):
     FIRST='先攻'
     LATER='後攻'
 
@@ -24,8 +26,8 @@ class Game():
         self.black_score= 0
         self.white_score= 0
 
-        self.mode=Mode.CPU.value
-        self.mode_turn=Mode.FIRST.value
+        self.mode=ModeGame.CPU
+        self.mode_turn=ModeTurn.FIRST
 
     @property
     def set_mode(self):
@@ -35,19 +37,19 @@ class Game():
 
     @property
     def is_cpu(self):
-        return self.mode==Mode.CPU.value
+        return self.mode==ModeGame.CPU.value
 
     @property
     def is_friends(self):
-        return self.mode==Mode.FRIENDS.value
+        return self.mode==ModeGame.FRIENDS.value
 
     @property
     def is_first(self):
-        return self.mode_turn==Mode.FIRST.value
+        return self.mode_turn==ModeTurn.FIRST.value
 
     @property
     def is_later(self):
-        return self.mode_turn==Mode.LATER.value
+        return self.mode_turn==ModeTurn.LATER.value
 
     @property
     def is_cpu_or_friends(self):

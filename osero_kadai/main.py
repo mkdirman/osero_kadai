@@ -1,7 +1,7 @@
 
 from models.game import Game
 
-#game=Game()
+game=Game()
 
 
 def main():
@@ -23,8 +23,8 @@ def main():
 
     game.show_score
 
-#if __name__ == "__main__":
-#    main()
+if __name__ == "__main__":
+    main()
 
 import unittest
 
