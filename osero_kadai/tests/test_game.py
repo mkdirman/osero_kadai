@@ -39,7 +39,7 @@ class TestGame(unittest.TestCase):
         exboard[5,4]= -1
 
         self.assertTrue(np.array_equal(game.game_board.board, exboard))
-        self.assertEqual(game.turn, 1)
+        self.assertEqual(game.player_turn, 1)
         self.assertEqual(game.x, 0)
         self.assertEqual(game.y, 0)
         self.assertEqual(game.black_score, 0)
@@ -51,7 +51,7 @@ class TestGame(unittest.TestCase):
 
         game._cpu_or_friends
 
-        self.assertEqual(game.mode, 'cpu')
+        self.assertEqual(game.mode_game, 'cpu')
 
     def test__cpu_or_friends_answer_friends(self):
         game= Game()
@@ -59,7 +59,7 @@ class TestGame(unittest.TestCase):
 
         game._cpu_or_friends
 
-        self.assertEqual(game.mode, 'friends')
+        self.assertEqual(game.mode_game, 'friends')
 
     def test__first_or_later_answer_first(self):
         game= Game()
@@ -79,21 +79,21 @@ class TestGame(unittest.TestCase):
 
     def test_is_cpu(self):
         game=Game()
-        game.mode='cpu'
+        game.mode_game='cpu'
 
         self.assertTrue(game.is_cpu)
 
-        game.mode='friends'
+        game.mode_game='friends'
         self.assertFalse(game.is_cpu)
 
 
     def test_is_friends(self):
         game=Game()
-        game.mode='friends'
+        game.mode_game='friends'
 
         self.assertTrue(game.is_friends)
 
-        game.mode='cpu'
+        game.mode_game='cpu'
         self.assertFalse(game.is_friends)
 
 
@@ -117,14 +117,14 @@ class TestGame(unittest.TestCase):
 
     def test_is_cpu_or_friends(self):
         game=Game()
-        game.mode='cpu'
+        game.mode_game='cpu'
 
         self.assertTrue(game.is_cpu_or_friends)
 
-        game.mode='friends'
+        game.mode_game='friends'
         self.assertTrue(game.is_cpu_or_friends)
 
-        game.mode='valid'
+        game.mode_game='valid'
         self.assertFalse(game.is_cpu_or_friends)
 
     def test_is_first_or_later(self):
@@ -160,7 +160,7 @@ class TestGame(unittest.TestCase):
 
     def test_set_players_mode_cpu(self):
         game= Game()
-        game.mode='cpu'
+        game.mode_game='cpu'
         game.mode_turn='先攻'
 
         game.set_players
@@ -170,7 +170,7 @@ class TestGame(unittest.TestCase):
 
     def test_set_players_mode_friends(self):
         game= Game()
-        game.mode='friends'
+        game.mode_game='friends'
 
         game.set_players
 
@@ -179,17 +179,17 @@ class TestGame(unittest.TestCase):
 
     def test_is_valid_mode_cpu(self):
         game= Game()
-        game.mode= 'cpu'
+        game.mode_game= 'cpu'
         self.assertIsNone(game.is_valid_mode) 
 
     def test_is_valid_mode_friends(self):
         game= Game()
-        game.mode= 'friends'
+        game.mode_game= 'friends'
         self.assertIsNone(game.is_valid_mode) 
 
     def test_is_valid_mode_invalid(self):
         game= Game()
-        game.mode= 'invalid'
+        game.mode_game= 'invalid'
         with self.assertRaises(ValueError):
             game.is_valid_mode  
 
@@ -217,7 +217,7 @@ class TestGame(unittest.TestCase):
 
     def test_set_up_cpu_board_first(self):
         game= Game()
-        game.mode= 'cpu'
+        game.mode_game= 'cpu'
         game.mode_turn= '先攻'
         game.set_players
         game.p_w.set_available_lists([(5,3), (6,4), (3,5), (4,6)])
@@ -228,7 +228,7 @@ class TestGame(unittest.TestCase):
 
     def test_set_up_cpu_board_later(self):
         game= Game()
-        game.mode= 'cpu'
+        game.mode_game= 'cpu'
         game.mode_turn= '後攻'
         game.set_players
         game.p_b.set_available_lists([(3,5), (5,3), (4,6), (6,4)])
@@ -246,7 +246,7 @@ class TestGame(unittest.TestCase):
 
         game.is_available
 
-        self.assertEqual(game.turn, -1)
+        self.assertEqual(game.player_turn, -1)
 
     def test_is_continue_True(self):
         game= Game()

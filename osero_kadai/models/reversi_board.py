@@ -10,7 +10,7 @@ class ReversiBoard():
         self.board[4,5]= -1
         self.board[5,4]= -1
         self.available_list=[]
-        self.i=0
+        self.i_show_board_splitting_function=0
 
         self.ax=None
 
@@ -26,7 +26,7 @@ class ReversiBoard():
 
     @property
     def _make_baseboard(self):
-        self.i=0
+        self.i_show_board_splitting_function=0
         _, self.ax=plt.subplots()
         for y in range(9):
             for x in range(9):
@@ -42,12 +42,12 @@ class ReversiBoard():
 
 
     def _show_number(self, x_, y_):
-        if self.i== 8:
+        if self.i_show_board_splitting_function== 8:
             point=None
-            self.i+= 1
+            self.i_show_board_splitting_function+= 1
         else:
-            point=abs(8-self.i)
-            self.i+= 1
+            point=abs(8-self.i_show_board_splitting_function)
+            self.i_show_board_splitting_function+= 1
         self.ax.text(x_+40, y_+40, point, ha="center", va="center", fontsize=10)
 
     def _show_point(self, x_, y_):

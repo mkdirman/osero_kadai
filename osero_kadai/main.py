@@ -11,7 +11,7 @@ def main():
 
         game.is_available
 
-        game.show_board
+        game.display_board
         try:
             game.put_stone
         except ValueError as e:
