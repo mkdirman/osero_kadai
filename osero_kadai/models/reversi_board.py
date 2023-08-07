@@ -81,6 +81,25 @@ class ReversiBoard():
         self.update_diagonal1(x, y, color)
         self.update_diagonal2(x, y, color)
 
+    def check_x(self,x,z,y,color):
+
+        if self.board[z,y]== color:
+                self.board[z:x,y]= color
+                return True
+        elif self.board[z,y]== 0:
+                return True
+        else:
+                return False
+    def check_y(self,x,z,y,color):
+
+        if self.board[x,z]== color:
+                self.board[x,y:z]= color
+                return True
+        elif self.board[x,z]== 0:
+                return True
+        else:
+                return False   
+
     def update_length(self, x, y, color):
         for i in range(1,x):
             if self.board[x-i,y]== color:
@@ -89,7 +108,7 @@ class ReversiBoard():
             elif self.board[x-i,y]== 0:
                 break
             else:
-                continue
+                continue        
 
         for i in range(1,9-x):
             if self.board[x+i,y]== color:
@@ -176,31 +195,31 @@ class ReversiBoard():
             for x in range(1,9):
                 if self.board[x,y]== 0:
 
-                    if self.judge(x, y, color)== True:
+                    if self.is_Frip_over(x, y, color)== False:
                         self.available_list.append((x, y))
 
         return self.available_list
 
-    def judge(self, x, y, color):
+    def is_Frip_over(self, x, y, color):
         board_p= self.board.copy()
         self.update_board(x, y, color)
 
         if abs((self.board-board_p).sum())== 1:
-            self.board= board_p
-            return False
-        else:
             self.board= board_p
             return True
-
-    def input_judge(self, x, y, color):
-        board_p= self.board.copy()
-        self.update_board(x, y, color)
-
-        if abs((self.board-board_p).sum())== 1:
+        else:
             self.board= board_p
-            raise ValueError('そこには置けないよ！')
-        self.board= board_p
+            return False
 
-    def already_put(self, x, y):
+    def is_flip_over(self, x, y, color):#ここの名前迷う。
+        if self.is_Frip_over(x, y, color):
+            raise ValueError('そこには置けないよ！')
+
+    def is_already_put(self, x, y):
         if self.board[x,y]!= 0:
             raise ValueError('もう置かれてる！')
+
+    def is_put(self,x,y,color):
+
+        self.is_already_put(x, y)
+        self.is_flip_over(x, y, color)
