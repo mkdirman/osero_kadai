@@ -18,7 +18,7 @@ class ReversiBoard():
 
     def show_board(self, color=1):
         self._make_baseboard
-        self._put__
+        self._put_stones_and_available_points
 
         plt.xlim(0, 720)
         plt.ylim(0, 720)
@@ -40,7 +40,7 @@ class ReversiBoard():
         if (x==0)|(y==8):
             self._write_number(x_, y_)
         else:
-            self._write_point(x_, y_)
+            self._write_green_back(x_, y_)
 
     def _write_number(self, x_, y_):
         if self.i_show_board_splitting_function== 8:
@@ -51,12 +51,12 @@ class ReversiBoard():
             self.i_show_board_splitting_function+= 1
         self.ax.text(x_+40, y_+40, point, ha="center", va="center", fontsize=10)
 
-    def _write_point(self, x_, y_):
+    def _write_green_back(self, x_, y_):
         rectangle = plt.Rectangle((x_, y_), 80, 80, edgecolor="black", facecolor="green")
         self.ax.add_patch(rectangle)
 
     @property
-    def _put_points(self):
+    def _put_stones_and_available_points(self):
         for x in range(9):
             for y in range(9):
                 self.put_stone(x, y)
@@ -84,13 +84,11 @@ class ReversiBoard():
 
     def update_length(self, x, y, color):
         for i in range(1,x):
-            if self.board[x-i,y]== color:
+            if self.board[x-i,y]== color:#例えば、found_same_color_point()みたいに小さな関数を作成した方が読み返した時に分かりやすい？
                 self.board[x-i:x,y]= color
                 break
-            elif self.board[x-i,y]== 0:
+            elif self.board[x-i,y]== 0:#ここなら、found_no_stone_point()みたいな
                 break
-            else:
-                continue
 
         for i in range(1,9-x):
             if self.board[x+i,y]== color:
@@ -98,18 +96,14 @@ class ReversiBoard():
                 break
             elif self.board[x+i,y]== 0:
                 break
-            else:
-                continue
 
-    def update_width(self, x, y, color):
+    def update_width(self, x, y, color):#同じような処理(1:同色探し,2:石がない場所探し)をしている
         for i in range(1,y):
             if self.board[x,y-i]== color:
-                self.board[x,y-i:y]= color
+                self.board[x,y-i:y]= color#x,y-i:yの部分が調査の種類毎に代わるので厄介。([x,y:y+i],[x:x+i,y]みたいになる場合など)
                 break
-            elif self.board[x,y-i]== 0:
-                break
-            else:
-                continue
+            elif self.board[x,y-i]== 0:#そしたら判別の部分だけ実行する関数を作ってあとでiを取り出せばいいではないか？
+                break                  #それだと結局iの判別も必要となり記述量が変わらない
 
         for i in range(1,9-y):
             if self.board[x,y+i]== color:
@@ -117,8 +111,6 @@ class ReversiBoard():
                 break
             elif self.board[x,y+i]== 0:
                 break
-            else:
-                continue
 
     def update_diagonal1(self, x, y, color):
         for i in range(1, min(x,y)+1):
@@ -130,8 +122,6 @@ class ReversiBoard():
                 break
             elif self.board[x-i,y-i]== 0:
                 break
-            else:
-                continue
 
         for i in range(1, min(9-x,9-y)+1):
             if (x+i > 8)|(y+i > 8):
@@ -142,8 +132,6 @@ class ReversiBoard():
                 break
             elif self.board[x+i,y+i]== 0:
                 break
-            else:
-                continue
 
     def update_diagonal2(self, x, y, color):
 
@@ -156,8 +144,6 @@ class ReversiBoard():
                 break
             elif self.board[x+i,y-i]== 0:
                 break
-            else:
-                continue
 
         for i in range(1, min(x,9-y)+1):
             if (x-i < 1)|(y+i > 8):
@@ -168,8 +154,7 @@ class ReversiBoard():
                 break
             elif self.board[x-i,y+i]== 0:
                 break
-            else:
-                continue
+
 
     def get_available_list(self, color):
         self.available_list= []

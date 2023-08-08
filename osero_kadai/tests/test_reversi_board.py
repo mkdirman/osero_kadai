@@ -10,19 +10,15 @@ class TestReversiBoard(unittest.TestCase):
     def test_initialize_board(self):
         board= ReversiBoard()
 
-
         self.assertEqual(board.board[4,4], 1)
         self.assertEqual(board.board[5,5], 1)
         self.assertEqual(board.board[4,5], -1)
         self.assertEqual(board.board[5,4], -1)
 
     def test_update_board_length(self):
-        board= ReversiBoard()
-        board.board[4,4]= 1
-        board.board[4,5]= -1
-        board.board[5,5]= 1
-        board.board[5,4]= -1
-  
+
+        board= ReversiBoard
+
         board.update_board(5, 3, 1)
 
         exboard = np.zeros((9,9))
@@ -36,10 +32,6 @@ class TestReversiBoard(unittest.TestCase):
 
     def test_update_board_width(self):
         board= ReversiBoard()
-        board.board[4,4]= 1
-        board.board[4,5]= -1
-        board.board[5,5]= 1
-        board.board[5,4]= -1
   
         board.update_board(3, 5, 1)
 
@@ -96,21 +88,17 @@ class TestReversiBoard(unittest.TestCase):
 
     def test_get_available_list(self):
         board= ReversiBoard()
-        board.board[4,4]= 1
-        board.board[4,5]= -1
-        board.board[5,5]= 1
-        board.board[5,4]= -1
 
         result= board.get_available_list(1)
 
         expected_list= [(5, 3), (6, 4), (3, 5), (4, 6)]
         self.assertEqual(result, expected_list)
 
-    def test_judge(self):
+    def test_is_Frip_over(self):
         board= ReversiBoard()
 
-        result1= board.judge(5, 3, 1)
-        result2= board.judge(3, 3, 1)
+        result1= board.is_Frip_over(5, 3, 1)
+        result2= board.is_Frip_over(3, 3, 1)
 
         self.assertTrue(result1)
         self.assertFalse(result2)
@@ -119,10 +107,10 @@ class TestReversiBoard(unittest.TestCase):
         board= ReversiBoard()
 
         with self.assertRaises(ValueError):
-            board.input_judge(3, 2, 1)
+            board.is_Frip_over(3, 2, 1)
 
-    def test_already_put(self):
+    def test_is_already_put(self):
         board= ReversiBoard()
 
         with self.assertRaises(ValueError):
-            board.already_put(4, 5)
+            board.is_already_put(4, 5)

@@ -45,35 +45,35 @@ class TestGame(unittest.TestCase):
         self.assertEqual(game.black_score, 0)
         self.assertEqual(game.white_score, 0)
 
-    def test__cpu_or_friends_answer_cpu(self):
+    def test__choose_cpu_or_friends_answer_cpu(self):
         game= Game()
         print('cpuの入力可否')
 
-        game._cpu_or_friends
+        game._choose_cpu_or_friends
 
         self.assertEqual(game.mode_game, 'cpu')
 
-    def test__cpu_or_friends_answer_friends(self):
+    def test__choose_cpu_or_friends_answer_friends(self):
         game= Game()
         print('friendsの入力可否')
 
-        game._cpu_or_friends
+        game._choose_cpu_or_friends
 
         self.assertEqual(game.mode_game, 'friends')
 
-    def test__first_or_later_answer_first(self):
+    def test__choose_first_or_later_answer_first(self):
         game= Game()
         print('先攻の入力可否')
 
-        game._first_or_later
+        game._choose_first_or_later
 
         self.assertEqual(game.mode_turn, '先攻')
 
-    def test__first_or_later_answer_later(self):
+    def test__choose_first_or_later_answer_later(self):
         game= Game()
         print('後攻の入力可否')
 
-        game._first_or_later
+        game._choose_first_or_later
 
         self.assertEqual(game.mode_turn, '後攻')
 
