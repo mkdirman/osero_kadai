@@ -32,10 +32,10 @@ class Game():
         self.mode_turn= ModeTurn.FIRST
 
     @property
-    def choose_mode_of_game_and_turn(self):#chooseのほうが直観的
-        self._cpu_or_friends
+    def set_up_mode_and_turn(self):
+        self._choose_mode
         if self.is_cpu:
-            self._first_or_later
+            self._choose_turn
 
     @property
     def is_cpu(self):
@@ -62,11 +62,11 @@ class Game():
         return self.is_first | self.is_later
 
     @property
-    def _cpu_or_friends(self):
+    def _choose_mode(self):
         self.mode_game= input('モードを選んでね:cpu or friends---')
 
     @property
-    def _first_or_later(self):
+    def _choose_turn(self):
         self.mode_turn= input('先攻か後攻か選んでね:先攻 or 後攻---')
     
     @property
@@ -87,10 +87,9 @@ class Game():
             self.p_w= Player(color= -1) 
 
     @property
-    def set_up_game(self):#大きな動きをする関数では、ここで使う関数であることが分かりやすいようになにか共通のワードを入れるべきか？
-                          #それともchooseの様に動作に重きを置いた名前にするべきか。
+    def set_up_game(self):
         while True:
-            self.set_up_mode
+            self.set_up_mode_and_turn
             try:
                 self.is_valid_mode
                 self.is_valid_turn
@@ -124,8 +123,8 @@ class Game():
         else:
             self.x,self.y= self.p_w.input_point
 
-        self.game_board.already_put(self.x_stone_coordinate, self.y_stone_coordinate)
-        self.game_board.input_judge(self.x_stone_coordinate, self.y_stone_coordinate, color= self.player_turn)
+        self.game_board.is_already_put(self.x, self.y)
+        self.game_board.is_flip_over(self.x, self.y, color= self.player_turn)
 
     @property
     def set_available_position(self):
@@ -149,8 +148,8 @@ class Game():
             return True
 
     @property
-    def display_final_score(self):#画面に表示する機能はdisplayで統一すると分かりやすい？
-        self._sum_each_score
+    def display_final_score(self):
+        self._count_stones
         self._is_win
 
     @property  
@@ -164,7 +163,7 @@ class Game():
         print('ゲーム終了')
 
     @property
-    def _sum_each_score(self):#eachは書きすぎ？一応、片方のみならず両方のスコアを計算する機能の関数ではある。
+    def _count_stones(self):
         self.black_score= np.sum(self.game_board.board== 1)
         self.white_score= np.sum(self.game_board.board== -1)
 
@@ -178,4 +177,4 @@ class Game():
 
     @property
     def update_board(self):
-        self.game_board.update_board(self.x_stone_coordinate, self.y_stone_coordinate, self.player_turn)
+        self.game_board.update_board(self.x, self.y, self.player_turn)
