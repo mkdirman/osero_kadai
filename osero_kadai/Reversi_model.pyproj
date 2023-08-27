@@ -26,6 +26,7 @@
     <Compile Include="main.py" />
     <Compile Include="models\player.py" />
     <Compile Include="models\reversi_board.py" />
+    <Compile Include="models\tmp_game.py" />
     <Compile Include="tests\test_cpu_player.py" />
     <Compile Include="test.py" />
     <Compile Include="tests\test_game.py" />

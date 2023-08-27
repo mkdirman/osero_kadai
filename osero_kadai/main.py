@@ -9,7 +9,7 @@ def main():
 
     while game.is_continue:
 
-        game.is_available
+        game.is_available_put
 
         game.display_board
         try:

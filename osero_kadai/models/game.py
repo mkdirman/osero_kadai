@@ -1,3 +1,4 @@
+from distutils.command import install_scripts
 import numpy as np
 
 from models.player import Player
@@ -7,6 +8,9 @@ from models.cpu_player import CpuPlayer
 import numpy as np
 from enum import Enum
 
+#set_upの1.game_mode 2.turn 3.playerでクラス作成してそれぞれ管理？
+#あんまりクラス増やすのはそれはそれでどうなんだろうか
+
 class ModeGame(Enum):
     CPU='cpu'
     FRIENDS='friends'
@@ -15,6 +19,7 @@ class ModeTurn(Enum):
     FIRST='先攻'
     LATER='後攻'
 
+ 
 
 class Game():
 
@@ -31,11 +36,11 @@ class Game():
         self.mode_game= ModeGame.CPU
         self.mode_turn= ModeTurn.FIRST
 
+
     @property
     def set_up_mode_and_turn(self):
         self._choose_mode
-        if self.is_cpu:
-            self._choose_turn
+        self._choose_turn
 
     @property
     def is_cpu(self):
@@ -135,7 +140,7 @@ class Game():
                 self.p_b.set_available_lists(self.game_board.get_available_list(self.p_b.color))
 
     @property
-    def is_available(self):
+    def is_available_put(self):
         if (self.game_board.get_available_list(self.player_turn)== []):
             print('置けないよ！')
             self.change_turn

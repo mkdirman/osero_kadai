@@ -84,10 +84,10 @@ class ReversiBoard():
 
     def update_length(self, x, y, color):
         for i in range(1,x):
-            if self.board[x-i,y]== color:#例えば、found_same_color_point()みたいに小さな関数を作成した方が読み返した時に分かりやすい？
+            if self.board[x-i,y]== color:
                 self.board[x-i:x,y]= color
                 break
-            elif self.board[x-i,y]== 0:#ここなら、found_no_stone_point()みたいな
+            elif self.board[x-i,y]== 0:
                 break
 
         for i in range(1,9-x):
@@ -97,13 +97,13 @@ class ReversiBoard():
             elif self.board[x+i,y]== 0:
                 break
 
-    def update_width(self, x, y, color):#同じような処理(1:同色探し,2:石がない場所探し)をしている
+    def update_width(self, x, y, color):
         for i in range(1,y):
             if self.board[x,y-i]== color:
-                self.board[x,y-i:y]= color#x,y-i:yの部分が調査の種類毎に代わるので厄介。([x,y:y+i],[x:x+i,y]みたいになる場合など)
+                self.board[x,y-i:y]= color
                 break
-            elif self.board[x,y-i]== 0:#そしたら判別の部分だけ実行する関数を作ってあとでiを取り出せばいいではないか？
-                break                  #それだと結局iの判別も必要となり記述量が変わらない
+            elif self.board[x,y-i]== 0:
+                break                 
 
         for i in range(1,9-y):
             if self.board[x,y+i]== color:
@@ -168,7 +168,7 @@ class ReversiBoard():
 
         return self.available_list
 
-    def is_Frip_over(self, x, y, color):
+    def is_frip_over(self, x, y, color):
         board_p= self.board.copy()
         self.update_board(x, y, color)
 
@@ -179,11 +179,11 @@ class ReversiBoard():
             self.board= board_p
             return False
 
-    def is_flip_over(self, x, y, color):#ここの名前迷う。
-        if self.is_Frip_over(x, y, color):
+    def check_flip_over(self, x, y, color):
+        if self.is_frip_over(x, y, color):
             raise ValueError('そこには置けないよ！')
 
-    def is_already_put(self, x, y):
+    def check_already_put(self, x, y):
         if self.board[x,y]!= 0:
             raise ValueError('もう置かれてる！')
 
