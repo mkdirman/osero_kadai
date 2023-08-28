@@ -78,31 +78,31 @@ class Players():
 
     @property
     def set_up(self):
-        if self.Mode.is_cpu:
+        if self.mode.is_cpu:
             self.set_up_cpu_and_player
 
-        if self.Mode.is_friends:
+        if self.mode.is_friends:
             self.set_up_player_and_player
 
     @property
     def set_up_cpu_and_player(self):
-        if self.Turn.is_first:
-            self.Player_first=Player(color=1)
-            self.Player_later=CpuPlayer(color=-1)
+        if self.turn.is_first:
+            self.first=Player(color=1)
+            self.later=CpuPlayer(color=-1)
 
         if self.Turn.is_later:
-            self.Player_first=CpuPlayer(color=1)
-            self.Player_later=Player(color=-1)
+            self.first=CpuPlayer(color=1)
+            self.later=Player(color=-1)
 
     @property
     def set_up_player_and_player(self):
         if self.Turn.is_first:
-            self.Player_first=Player(color=1)
-            self.Player_later=Player(color=-1)
+            self.first=Player(color=1)
+            self.later=Player(color=-1)
 
         if self.Turn.is_later:
-            self.Player_first=Player(color=1)
-            self.Player_later=Player(color=-1)
+            self.first=Player(color=1)
+            self.later=Player(color=-1)
 
 class Game():
 
