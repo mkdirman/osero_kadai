@@ -1,4 +1,5 @@
 from distutils.command import install_scripts
+from turtle import mode
 import numpy as np
 
 from models.player import Player
@@ -20,8 +21,28 @@ class Turn():
     def __init__(self):
         self.main_player= ModeTurn.FIRST
 
+    @property
+    def set_up(self):
+        while True:
+            self.inputs
+            try:
+                self.is_valid
+            except ValueError as e:
+                print(str(e))
+                continue
+
+            break
+
+    @property
     def inputs(self):
         self.main_player = input('先攻後攻を選んでね:先攻 or 後攻---')
+
+    @property
+    def is_valid(self):
+        if self.is_first_or_later:
+            print('さあ、ゲームを始めよう')
+        else:
+            raise ValueError('先攻か後攻で選択してね')
 
     @property
     def is_first(self):
@@ -35,20 +56,35 @@ class Turn():
     def is_first_or_later(self):
         return self.is_first | self.is_later
 
-    @property
-    def is_valid(self):
-        if self.is_first_or_later:
-            print('さあ、ゲームを始めよう')
-        else:
-            raise ValueError('先攻か後攻で選択してね')
+
 
 
 class  Mode():
     def __init__(self):
         self.game_mode = ModeGame.CPU
 
+    @property
+    def set_up(self):
+        while True:
+            self.inputs
+            try:
+                self.is_valid
+            except ValueError as e:
+                print(str(e))
+                continue
+
+            break
+
+    @property
     def inputs(self):
         self.game_mode = input('モードを選んでね:cpu or friends---')
+
+    @property
+    def is_valid(self):
+        if self.is_cpu_or_friends:
+            print('{}モードで遊びます'.format(self.game_mode))
+        else:
+            raise ValueError('cpuかfriendsで選択してね')
 
     @property
     def is_cpu(self):
@@ -62,55 +98,46 @@ class  Mode():
     def is_cpu_or_friends(self):
         return self.is_cpu | self.is_friends
 
-    @property
-    def is_valid(self):
-        if self.is_cpu_or_friends:
-            print('{}モードで遊びます'.format(self.game_mode))
-        else:
-            raise ValueError('cpuかfriendsで選択してね')
 
 
 class Players():
+    def __init__(
+        self,
+        first_player: (Player, CpuPlayer),
+        later_player: (Player, CpuPlayer)
+    )-> None:
+        self.first= first_player
+        self.later= later_player
 
-    def __init__(self):
-        self.first= Player(color=1)
-        self.later= Player(color=-1)
+class PlayersFactory():
+    @staticmethod
+    def create_vs_cpu(turn_main_player):
 
-    @property
-    def set_up(self):
-        if self.mode.is_cpu:
-            self.set_up_cpu_and_player
+        if turn_main_player== ModeTurn.FIRST.value:
+            return Players(
+                first_player= Player(color= 1),
+                later_player= CpuPlayer(color= -1)
+                )
 
-        if self.mode.is_friends:
-            self.set_up_player_and_player
+        if turn_main_player== ModeTurn.LATER.value:
+            return Players(
+                first_player= CpuPlayer(color= 1),
+                later_player= Player(color= -1)
+                )
 
-    @property
-    def set_up_cpu_and_player(self):
-        if self.turn.is_first:
-            self.first=Player(color=1)
-            self.later=CpuPlayer(color=-1)
-
-        if self.Turn.is_later:
-            self.first=CpuPlayer(color=1)
-            self.later=Player(color=-1)
-
-    @property
-    def set_up_player_and_player(self):
-        if self.Turn.is_first:
-            self.first=Player(color=1)
-            self.later=Player(color=-1)
-
-        if self.Turn.is_later:
-            self.first=Player(color=1)
-            self.later=Player(color=-1)
+    @staticmethod
+    def create_vs_player():
+        return Players(
+            first_player= Player(color= 1),
+            later_player= Player(color= -1)
+            )
 
 class Game():
 
-    def __init__(self):
+    def __init__(self, players: Players)-> None:
+        self.players= players
+        
         self.game_board= ReversiBoard()
-        self.turn=Turn()
-        self.mode=Mode()
-        self.players=Players()
 
         self.x= 0
         self.y= 0
@@ -119,46 +146,24 @@ class Game():
         self.game_turn=1
 
     @property
-    def set_up_mode_and_turn(self):
-        self.turn.inputs
-        self.mode.inputs
-
-    @property
-    def set_up_game(self):
-        while True:
-            self.set_up_mode_and_turn
-            try:
-                self.mode.is_valid
-                self.turn.is_valid
-            except ValueError as e:
-                print(str(e))
-                continue
-
-            self.players.set_up
-            break
-
-    @property
     def put_stone(self):
         self.set_available_position
 
         self.input_points
-        self.game_board.is_already_put(self.x, self.y)
-        self.game_board.is_flip_over(self.x, self.y, color= self.game_turn)
+        self.game_board.check_already_put(self.x, self.y)
+        self.game_board.check_frip_over(self.x, self.y, color= self.game_turn)
 
     @property
     def input_points(self):
-        if self.game_turn==1:
+        if self.game_turn== 1:
             self.x,self.y= self.players.first.input_point
-        if self.game_turn==-1:
+        if self.game_turn== -1:
             self.x,self.y= self.players.later.input_point
 
     @property
-    def set_available_position(self):#cpu_playerに移行してもいいかも？
-        if self.mode.is_cpu:
-            if self.turn.is_first:
-                self.players.first.set_available_lists(self.game_board.get_available_list(1))
-            else:
-                self.players.later.set_available_lists(self.game_board.get_available_list(-1))
+    def set_available_position(self):
+        self.players.first.set_available_lists(self.game_board.get_available_list(1))
+        self.players.later.set_available_lists(self.game_board.get_available_list(-1))
 
     @property
     def is_available_put(self):
@@ -195,7 +200,7 @@ class Game():
 
     @property
     def display_board(self):
-        self.game_board.show_board(color=self.game_turn)
+        self.game_board.show_board(color= self.game_turn)
 
     @property
     def change_turn(self):
@@ -204,3 +209,43 @@ class Game():
     @property
     def update_board(self):
         self.game_board.update_board(self.x, self.y, self.game_turn)
+
+
+class GameFactory():
+
+    def __init__(
+        self, 
+        mode: Mode, 
+        turn: Turn
+        )-> None:
+
+        self.mode= mode
+        self.turn= turn
+
+    @property
+    def create(self):
+        self.set_up_mode_and_turn
+
+        if self.mode.is_cpu:
+            players = PlayersFactory.create_vs_cpu(self.turn.main_player)  
+        if self.mode.is_friends:
+            players = PlayersFactory.create_vs_player()
+
+        return Game(players)
+
+    #Mode,Turnクラスそれぞれに、input→is_validの機能を持たせるのはどうだろう？
+    #独立させるメリットはis_validが入力ごとに適用できる事。Mode,Turnクラス単体で入力チェックの修正が出来る事。
+    #デメリットはinput→is_validの仕組みを変えるときの修正が散る事。
+    @property
+    def set_up_mode_and_turn(self):
+        self.mode.set_up
+        self.turn.set_up
+
+
+
+
+
+
+    
+
+    

@@ -163,7 +163,7 @@ class ReversiBoard():
             for x in range(1,9):
                 if self.board[x,y]== 0:
 
-                    if self.is_Frip_over(x, y, color)== False:
+                    if self.is_frip_over(x, y, color)== False:
                         self.available_list.append((x, y))
 
         return self.available_list
@@ -179,7 +179,7 @@ class ReversiBoard():
             self.board= board_p
             return False
 
-    def check_flip_over(self, x, y, color):
+    def check_frip_over(self, x, y, color):
         if self.is_frip_over(x, y, color):
             raise ValueError('そこには置けないよ！')
 

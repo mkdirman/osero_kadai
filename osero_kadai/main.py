@@ -1,11 +1,14 @@
 
-from models.game import Game
+from models.game import ModeGame, ModeTurn
+from models.tmp_game import GameFactory,Mode,Turn
 
-game=Game()
+
+game_factory= GameFactory(Mode(), Turn())
+game= game_factory.create
+
 
 
 def main():
-    game.set_up_game
 
     while game.is_continue:
 
@@ -26,17 +29,17 @@ def main():
 if __name__ == "__main__":
     main()
 
-import unittest
+#import unittest
 
-from tests.test_game import TestGame,TestMode
-from tests.test_reversi_board import TestReversiBoard
-from tests.test_player import TestPlayer
-from tests.test_cpu_player import TestCpuPlayer
+#from tests.test_game import TestGame,TestMode
+#from tests.test_reversi_board import TestReversiBoard
+#from tests.test_player import TestPlayer
+#from tests.test_cpu_player import TestCpuPlayer
 
-Mode=TestMode
-Game=TestGame
-Board=TestReversiBoard
-Player=TestPlayer
-Cpu=TestCpuPlayer
+#Mode=TestMode
+#Game=TestGame
+#Board=TestReversiBoard
+#Player=TestPlayer
+#Cpu=TestCpuPlayer
 
-unittest.main(argv=[''], verbosity=2, exit=False)
+#unittest.main(argv=[''], verbosity=2, exit=False)
