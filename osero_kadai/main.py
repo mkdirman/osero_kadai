@@ -1,14 +1,9 @@
-
-from models.game import ModeGame, ModeTurn
-from models.tmp_game import GameFactory,Mode,Turn
-
-
-game_factory= GameFactory(Mode(), Turn())
-game= game_factory.create
-
+from models.tmp_game import GameFactory, ModeGame, ModeTurn
 
 
 def main():
+
+    game = GameFactory.create(ModeGame.set_up(), ModeTurn.set_up())
 
     while game.is_continue:
 
