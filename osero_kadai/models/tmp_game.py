@@ -177,8 +177,10 @@ class GameFactory():
 
         if mode == ModeGame.CPU:
             players = PlayersFactory.create_vs_cpu(turn_main_player)  
-        if mode == ModeGame.FRIENDS:
+        elif mode == ModeGame.FRIENDS:
             players = PlayersFactory.create_vs_player()
+        else:
+            raise ValueError('mode or turn is None')
 
         return Game(players)
 
