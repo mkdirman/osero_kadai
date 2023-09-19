@@ -1,11 +1,15 @@
 
-from models.game import Game
+def create_game():
 
-game=Game()
+    mode = ModeGame.set_up()
+    turn = ModeTurn.set_up()
+    game = GameFactory.create(mode,turn)
 
+    return game
 
 def main():
-    game.set_up_game
+
+    game = create_game()
 
     while game.is_continue:
 

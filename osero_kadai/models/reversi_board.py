@@ -6,15 +6,17 @@ class ReversiBoard():
     def __init__(self):
        
         self.board=np.zeros((9,9))
-        self.board[4,4]= 1
-        self.board[5,5]= 1
-        self.board[4,5]= -1
-        self.board[5,4]= -1
+        self.board[4,4] = 1
+        self.board[5,5] = 1
+        self.board[4,5] = -1
+        self.board[5,4] = -1
 
-        self.available_list=[]
-        self.i_show_board_splitting_function=0
+        self.available_list = []
+        self.i_show_board_splitting_function = 0
 
-        self.ax=None
+        self.ax = None
+        self.size_square = 80
+        self.board_size = 9
 
     def show_board(self, color=1):
         self._make_baseboard
@@ -28,31 +30,31 @@ class ReversiBoard():
 
     @property
     def _make_baseboard(self):
-        self.i_show_board_splitting_function=0
-        _, self.ax=plt.subplots()
-        for y in range(9):
-            for x in range(9):
+        self.i_show_board_splitting_function = 0
+        _, self.ax = plt.subplots()
+        for y in range(self.board_size):
+            for x in range(self.board_size):
                 self.write_on_board(x, y)
             
     def write_on_board(self, x, y):
-        y_=y*80
-        x_=x*80
+        y_ = y*self.size_square
+        x_ = x*self.size_square
         if (x==0)|(y==8):
             self._write_number(x_, y_)
         else:
             self._write_green_back(x_, y_)
 
     def _write_number(self, x_, y_):
-        if self.i_show_board_splitting_function== 8:
-            point=None
-            self.i_show_board_splitting_function+= 1
+        if self.i_show_board_splitting_function == 8:
+            point = None
+            self.i_show_board_splitting_function += 1
         else:
-            point=abs(8-self.i_show_board_splitting_function)
-            self.i_show_board_splitting_function+= 1
-        self.ax.text(x_+40, y_+40, point, ha="center", va="center", fontsize=10)
+            point = abs(8-self.i_show_board_splitting_function)
+            self.i_show_board_splitting_function += 1
+        self.ax.text(x_+self.size_square/2, y_+self.size_square/2, point, ha = "center", va = "center", fontsize = 10)
 
     def _write_green_back(self, x_, y_):
-        rectangle = plt.Rectangle((x_, y_), 80, 80, edgecolor="black", facecolor="green")
+        rectangle = plt.Rectangle((x_, y_), self.size_square, self.size_square, edgecolor= "black", facecolor= "green")
         self.ax.add_patch(rectangle)
 
     @property
