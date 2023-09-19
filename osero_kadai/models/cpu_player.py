@@ -11,14 +11,14 @@ class CpuPlayer():
 
       @property
       def input_point(self):
-          
+
           points= self.random_choice
           self.x= points[0]
           self.y= points[1]
           
           return self.x, self.y
 
-      def set_available_lists(self,available_lists):
+      def set_available_lists(self, available_lists):
           self.available_lists= available_lists
       
       @property

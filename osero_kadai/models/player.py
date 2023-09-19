@@ -47,6 +47,10 @@ class Player():
           except ValueError:
               raise ValueError('整数で入力してね！')
 
+      def set_available_lists(self,available_lists):
+          self.available_lists= available_lists
+      
+
       @property
       def is_range(self):
 

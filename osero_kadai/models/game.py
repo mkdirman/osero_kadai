@@ -8,9 +8,6 @@ from models.cpu_player import CpuPlayer
 import numpy as np
 from enum import Enum
 
-#set_upの1.game_mode 2.turn 3.playerでクラス作成してそれぞれ管理？
-#あんまりクラス増やすのはそれはそれでどうなんだろうか
-
 class ModeGame(Enum):
     CPU='cpu'
     FRIENDS='friends'
@@ -18,8 +15,6 @@ class ModeGame(Enum):
 class ModeTurn(Enum):
     FIRST='先攻'
     LATER='後攻'
-
- 
 
 class Game():
 
@@ -128,8 +123,8 @@ class Game():
         else:
             self.x,self.y= self.p_w.input_point
 
-        self.game_board.is_already_put(self.x, self.y)
-        self.game_board.is_flip_over(self.x, self.y, color= self.player_turn)
+        self.game_board.check_already_put(self.x, self.y)
+        self.game_board.check_frip_over(self.x, self.y, color= self.player_turn)
 
     @property
     def set_available_position(self):
