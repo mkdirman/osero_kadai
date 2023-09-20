@@ -2,7 +2,7 @@ from distutils.command import install_scripts
 from turtle import mode
 import numpy as np
 
-from models.player import Player
+from models.player import Player, Point
 from models.reversi_board import ReversiBoard
 from models.cpu_player import CpuPlayer
 
@@ -94,7 +94,7 @@ class PlayersFactory():
 class Game():
 
     def __init__(self, players: Players)-> None:
-        self.players = Players
+        self.players = players
  
         self.game_board = ReversiBoard()
 
@@ -121,8 +121,7 @@ class Game():
 
     @property
     def set_available_position(self):
-        self.players.first.set_available_lists(self.game_board.get_available_list(1))
-        self.players.later.set_available_lists(self.game_board.get_available_list(-1))
+        Point.available_list = self.game_board.get_available_list(self.game_turn)
 
     @property
     def is_available_put(self):
@@ -169,7 +168,6 @@ class Game():
     def update_board(self):
         self.game_board.update_board(self.x, self.y, self.game_turn)
 
-
 class GameFactory():
 
     @staticmethod
@@ -183,14 +181,3 @@ class GameFactory():
             raise ValueError('mode or turn is None')
 
         return Game(players)
-
-
-
-
-
-
-
-
-    
-
-    

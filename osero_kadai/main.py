@@ -1,9 +1,20 @@
 from models.tmp_game import GameFactory, ModeGame, ModeTurn
 
+def set_up():
+    while True:
+        try:
+            mode: GameMode = ModeGame.value_of(input('モードを選んでね:cpu or friends---'))
+            turn_main_player: TurnMode = ModeTurn.value_of(input('先攻・後攻を選んでね:先攻 or 後攻---'))
+            game = GameFactory.create(mode, turn_main_player)
+            break
+
+        except ValueError as e:
+            print(e)
+    return game
 
 def main():
 
-    game = GameFactory.create(ModeGame.set_up(), ModeTurn.set_up())
+    game = set_up()
 
     while game.is_continue:
 

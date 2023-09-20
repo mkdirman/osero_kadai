@@ -1,28 +1,21 @@
 import random
+from models.player import Point
 
 class CpuPlayer():
 
-      def __init__(self,color):
+      def __init__(self, color:int):
           
-          self.color= color
-          self.x= 0
-          self.y= 0
-          self.available_lists= []
+          self.color = color
 
       @property
       def input_point(self):
 
-          points= self.random_choice
-          self.x= points[0]
-          self.y= points[1]
+          points = self.random_choice
+          x = points[0]
+          y = points[1]
           
-          return self.x, self.y
+          return x, y
 
-      def set_available_lists(self, available_lists):
-          self.available_lists= available_lists
-      
       @property
       def random_choice(self):
-          return random.choice(self.available_lists)
-
-
+          return random.choice(Point.available_list)
