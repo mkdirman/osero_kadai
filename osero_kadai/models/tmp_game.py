@@ -2,14 +2,13 @@ from distutils.command import install_scripts
 from turtle import mode
 import numpy as np
 
-from models.player import Player, Point
-from models.reversi_board import ReversiBoard
+from models.player import Player
 from models.cpu_player import CpuPlayer
+from models.reversi_board import ReversiBoard
+from models.point import Point
 
 import numpy as np
 from enum import Enum
-
-#一緒にしてしまうとGameModeにTurnが入る可能性もあるから×
 
 class ModeGame(Enum):
     CPU = 'cpu'
@@ -98,8 +97,7 @@ class Game():
  
         self.game_board = ReversiBoard()
 
-        self.x = 0
-        self.y = 0
+        self.point = None
         self.black_score = 0
         self.white_score = 0
         self.game_turn = 1
@@ -109,16 +107,23 @@ class Game():
         self.set_available_position
 
         self.input_points
-        self.game_board.check_already_put(self.x, self.y)
-        self.game_board.check_frip_over(self.x, self.y, color= self.game_turn)
+        self.game_board.check_already_put(self.point)
+        self.game_board.check_frip_over(self.point, color= self.game_turn)
 
     @property
     def input_points(self):
         if self.game_turn == 1:
-            self.x,self.y = self.players.first.input_point
+            self.point = self.players.first.input_point
         if self.game_turn == -1:
-            self.x,self.y = self.players.later.input_point
+            self.point = self.players.later.input_point
 
+    #Pointを経由するだけになってしまう
+    """
+    @property
+    def set_available_position(self):
+        Point.available_list = self.game_board.get_available_list(self.game_turn)
+
+    """
     @property
     def set_available_position(self):
         Point.available_list = self.game_board.get_available_list(self.game_turn)
@@ -166,7 +171,7 @@ class Game():
 
     @property
     def update_board(self):
-        self.game_board.update_board(self.x, self.y, self.game_turn)
+        self.game_board.update_board(self.point, self.game_turn)
 
 class GameFactory():
 

@@ -1,5 +1,5 @@
 import random
-from models.player import Point
+from models.point import Point
 
 class CpuPlayer():
 
@@ -9,12 +9,9 @@ class CpuPlayer():
 
       @property
       def input_point(self):
+          point = self.random_choice
 
-          points = self.random_choice
-          x = points[0]
-          y = points[1]
-          
-          return x, y
+          return point
 
       @property
       def random_choice(self):
