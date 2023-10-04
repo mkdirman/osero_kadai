@@ -70,7 +70,7 @@ class ReversiBoard():
         self.ax.text(x_on_square+self.SIZE_HALF_SQUARE, y_on_square+self.SIZE_HALF_SQUARE, point, ha = "center", va = "center", fontsize = 10)
 
     def _write_green_back(self,  x_on_square:int, y_on_square:int):
-        rectangle = plt.Rectangle((x_, y_), self.SIZE_SQUARE, self.SIZE_SQUARE, edgecolor= "black", facecolor= "green")
+        rectangle = plt.Rectangle((x__on_square, y__on_square), self.SIZE_SQUARE, self.SIZE_SQUARE, edgecolor= "black", facecolor= "green")
         self.ax.add_patch(rectangle)
 
     @property
