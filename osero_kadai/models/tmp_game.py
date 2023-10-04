@@ -108,7 +108,7 @@ class Game():
 
         self.input_points
         self.game_board.check_already_put(self.point)
-        self.game_board.check_frip_over(self.point, color= self.game_turn)
+        self.game_board.check_frip_over(self.point)
 
     @property
     def input_points(self):
@@ -117,13 +117,6 @@ class Game():
         if self.game_turn == -1:
             self.point = self.players.later.input_point
 
-    #Pointを経由するだけになってしまう
-    """
-    @property
-    def set_available_position(self):
-        Point.available_list = self.game_board.get_available_list(self.game_turn)
-
-    """
     @property
     def set_available_position(self):
         Point.available_list = self.game_board.get_available_list(self.game_turn)
@@ -171,7 +164,8 @@ class Game():
 
     @property
     def update_board(self):
-        self.game_board.update_board(self.point, self.game_turn)
+        self.game_board.update_board(self.point)
+
 
 class GameFactory():
 

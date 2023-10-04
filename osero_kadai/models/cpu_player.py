@@ -10,6 +10,7 @@ class CpuPlayer():
       @property
       def input_point(self):
           point = self.random_choice
+          point.color = self.color
 
           return point
 

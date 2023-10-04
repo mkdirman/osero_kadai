@@ -6,7 +6,7 @@ class Player():
 
       @property
       def input_point(self):
-          point = Point.inputs()
+          point = Point.inputs(self.color)
 
           return point
 
