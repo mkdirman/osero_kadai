@@ -24,6 +24,9 @@ class Point():
             if y < self.WALL_LIMIT_LOW or self.WALL_LIMIT_HIGH < y:
                raise InvalidInputValueException
 
+    def __eq__(self, other)->bool:
+         return self.x == other.x and self.y == other.y and self.color == other.color
+
     @staticmethod
     def inputs(color: int):
         while True:
@@ -34,16 +37,39 @@ class Point():
             except InvalidInputValueException:
                 print("再度入力してください")
 
-    @staticmethod
-    def input_board_init(board: np.array((9, 9))):
-        board[4,4] = 1
-        board[5,5] = 1
-        board[4,5] = -1
-        board[5,4] = -1
-
-        return board
-
     #pltを使って表示する際と、np.array()の配置が違う為ややこしい。
     @property
     def is_number_pos(self):
         return (self.x == 0)|(self.y == 0)
+
+    @property
+    def is_0(self):
+        return self.color == 0
+
+    def is_same_color(self,other):
+        return self.color == other.color
+
+    #@staticmethod
+    def get_right_point(self, i):
+        return Point(self.x + i, self.y)
+    #@staticmethod
+    def get_left_point(self, i):
+        return Point(self.x - i, self.y)
+    #@staticmethod
+    def get_top_point(self, i) :
+        return Point(self.x , self.y + i)
+
+    def get_bottom_point(self, i):
+        return Point(self.x , self.y - i)
+
+    def get_top_right_point(self, i):
+        return Point(self.x + i, self.y + i)
+
+    def get_top_left_point(self, i):
+        return Point(self.x - i, self.y + i)
+
+    def get_bottom_right_point(self, i):
+        return Point(self.x + i, self.y - i)
+
+    def get_bottom_left_point(self, i):
+        return Point(self.x - i, self.y - i)

@@ -30,7 +30,7 @@ def main():
         game.update_board
         game.change_turn
 
-    game.show_score
+    game.display_final_score
 
 if __name__ == "__main__":
     main()
