@@ -1,10 +1,10 @@
 from models.tmp_game import GameFactory, ModeGame, ModeTurn
-
 def set_up():
-    while True:
+    while True:            
+        mode: GameMode = ModeGame.value_of(input('モードを選択してね:cpu or friends'))                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+        turn_main_player: TurnMode = ModeTurn.value_of(input('先攻・後攻を選んでね:先攻 or 後攻---'))
+
         try:
-            mode: GameMode = ModeGame.value_of(input('モードを選んでね:cpu or friends---'))
-            turn_main_player: TurnMode = ModeTurn.value_of(input('先攻・後攻を選んでね:先攻 or 後攻---'))
             game = GameFactory.create(mode, turn_main_player)
             break
 
@@ -29,7 +29,7 @@ def main():
 
         game.update_board
         game.change_turn
-
+           
     game.display_final_score
 
 if __name__ == "__main__":
