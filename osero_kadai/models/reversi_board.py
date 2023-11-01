@@ -3,6 +3,17 @@ import matplotlib.pyplot as plt
 import random
 
 class ReversiBoard():
+<<<<<<< Updated upstream
+=======
+
+    SQUARE_SIZE = 80
+    HALF_SQUARE_SIZE = 40
+    BOARD_SIZE = 9
+    BOARD_ON_SQUARE_SIZE = 720
+    STONE_RADIUS_SIZE = 30
+    AVAILABLE_POINT_RADIUS_SIZE = 10
+  
+>>>>>>> Stashed changes
     def __init__(self):
        
         self.board=np.zeros((9,9))
@@ -18,7 +29,54 @@ class ReversiBoard():
         self.size_square = 80
         self.board_size = 9
 
+<<<<<<< Updated upstream
     def show_board(self, color=1):
+=======
+       
+    @property
+    def get_numpy_board(self):
+        numpy_board = np.zeros((self.BOARD_SIZE,self.BOARD_SIZE))
+
+        for x  in range(self.BOARD_SIZE):
+            for y  in range(self.BOARD_SIZE):
+                if self.board[x][y].color!=0:
+                    numpy_board[x,y] = self.board[x][y].color
+
+        return numpy_board
+
+    @property
+    def get_numpy_avail_list(self):
+        numpy_list = []
+
+        for x  in range(self.BOARD_SIZE):
+            for y  in range(self.BOARD_SIZE):
+
+                for a in self.available_list:
+   
+                  if Point(x,y,a.color)==a:
+                     numpy_list.append((x,y))
+
+
+        return numpy_list
+
+    @property
+    def make_board_(self):
+        board = []
+        for x in range(self.BOARD_SIZE):
+            board_row = []
+            for y in range(self.BOARD_SIZE):
+                board_row.append(Point(x,y,0))
+            board.append(board_row)
+        return board
+
+    def convert_size_to_square(self, point: Point):
+        return point.x*self.SQUARE_SIZE, point.y*self.SQUARE_SIZE
+
+    def convert_size_to_put_points(self, point: Point):
+        return point.x*self.SQUARE_SIZE+self.HALF_SQUARE_SIZE, (self.BOARD_ON_SQUARE_SIZE-point.y*self.SQUARE_SIZE)-self.HALF_SQUARE_SIZE
+
+    def show_board(self, color = 1):
+>>>>>>> Stashed changes
         self._make_baseboard
         self._put_stones_and_available_points
 
@@ -89,6 +147,7 @@ class ReversiBoard():
             if self.board[x-i,y]== color:
                 self.board[x-i:x,y]= color
                 break
+<<<<<<< Updated upstream
             elif self.board[x-i,y]== 0:
                 break
 
@@ -129,6 +188,19 @@ class ReversiBoard():
             if (x+i > 8)|(y+i > 8):
                 break
             if self.board[x+i,y+i]== color:
+=======
+            """
+            if (self.is_top_color_same(point, i))&(i > 1):
+                for c in range(1,i):
+                        self.board[point.x][point.y+c].color = point.color
+                        self.frip_num += 1
+
+            """
+            #複雑かも
+            #何個違う色があるのかを数える関数を作成
+            #for文は中身でやるべき
+            if self.is_top_color_same(point, i):
+>>>>>>> Stashed changes
                 for c in range(i):
                     self.board[x+c,y+c]= color
                 break
@@ -158,13 +230,73 @@ class ReversiBoard():
                 break
 
 
+<<<<<<< Updated upstream
     def get_available_list(self, color):
         self.available_list= []
+=======
+            if self.is_bottom_left_color_same(point, i):
+                for c in range(i):
+                    if not self.is_bottom_left_color_same(point, c):
+                        self.board[point.x-c][point.y-c].color = point.color
+                        self.frip_num += 1
+
+                break
+            elif self.is_bottom_left_point_0(point, i):
+                break
+
+        for i in range(1, min(self.BOARD_SIZE-point.x,self.BOARD_SIZE-point.y)+1):
+            if (point.x+i > Point.WALL_LIMIT_HIGH)|(point.y+i > Point.WALL_LIMIT_HIGH):
+                break
+
+            if self.is_top_right_color_same(point, i):
+                for c in range(i):
+                    if not self.is_top_right_color_same(point, c):
+                        self.board[point.x+c][point.y+c].color = point.color
+                        self.frip_num += 1
+
+                break
+            elif self.is_top_right_point_0(point, i):
+                break
+
+    def update_diagonal2(self, point: Point):
+        for i in range(1, min(self.BOARD_SIZE-point.x,point.y)+1):
+            if (point.x+i > Point.WALL_LIMIT_HIGH)|(point.y-i < Point.WALL_LIMIT_LOW):
+                break
+
+            if self.is_bottom_right_color_same(point, i):
+                for c in range(i):
+                    if not self.is_bottom_right_color_same(point, c):
+                        self.board[point.x+c][point.y-c].color = point.color
+                        self.frip_num += 1
+
+                break
+            elif self.is_bottom_right_point_0(point, i):
+                break
+
+        for i in range(1, min(point.x,9-point.y)+1):
+            if (point.x-i < Point.WALL_LIMIT_LOW)|(point.y+i > Point.WALL_LIMIT_HIGH):
+                break
+
+            if self.is_top_left_color_same(point, i):
+                for c in range(i):
+                    if not self.is_top_left_color_same(point, c):
+                        self.board[point.x-c][point.y+c].color = point.color
+                        self.frip_num += 1
+
+                break
+            elif self.is_top_left_point_0(point,i):
+                break
+
+    def get_available_list(self, color:int):
+        self.available_list= []
+        #print('init')
+>>>>>>> Stashed changes
 
         for y in range(1,9):
             for x in range(1,9):
                 if self.board[x,y]== 0:
 
+<<<<<<< Updated upstream
                     if self.is_frip_over(x, y, color)== False:
                         self.available_list.append((x, y))
 
@@ -179,6 +311,24 @@ class ReversiBoard():
             return True
         else:
             self.board= board_p
+=======
+                if (self.is_point_0(x,y))&(self.is_frip_over(Point(x, y, color))):
+
+                    self.available_list.append(self.board[x][y])
+
+        return self.available_list
+
+
+    def is_frip_over(self, point: Point):
+        board_before_update = copy.deepcopy(self.board)
+        
+        self.update_board(point)
+        self.board = board_before_update 
+
+        if  self.is_update_board:
+            return True
+        else:
+>>>>>>> Stashed changes
             return False
 
     def check_frip_over(self, x, y, color):
@@ -191,5 +341,87 @@ class ReversiBoard():
 
     def is_put(self,x,y,color):
 
+<<<<<<< Updated upstream
         self.is_already_put(x, y)
         self.is_flip_over(x, y, color)
+=======
+        self.check_already_put(point)
+        self.check_flip_over(point)
+
+    def get_point(self, point: Point) -> Point:
+        return self.board[point.x][point.y]
+
+    #0ってなによ→Noneみたいな
+    def is_point_0(self, x, y) -> bool:
+        return self.get_point(Point(x, y)).is_0
+
+
+    def is_left_color_same(self, base_point:Point, i) -> bool:
+        return base_point.is_same_color(self.get_left_point(base_point, i))
+    def is_right_color_same(self, base_point:Point, i)->  bool:
+        return base_point.is_same_color(self.get_right_point(base_point, i))
+    def is_top_color_same(self, base_point:Point, i) -> bool:
+        return base_point.is_same_color(self.get_top_point(base_point, i))
+    def is_bottom_color_same(self, base_point, i) -> bool:
+        return base_point.is_same_color(self.get_bottom_point(base_point, i))
+    def is_top_left_color_same(self, base_point:Point, i) -> bool:
+        return base_point.is_same_color(self.get_top_left_point(base_point, i))
+    def is_top_right_color_same(self, base_point:Point, i) -> bool:
+        return base_point.is_same_color(self.get_top_right_point(base_point, i))
+    def is_bottom_left_color_same(self, base_point:Point, i) -> bool:
+        return base_point.is_same_color(self.get_bottom_left_point(base_point, i))
+    def is_bottom_right_color_same(self, base_point:Point, i) -> bool:
+        return base_point.is_same_color(self.get_bottom_right_point(base_point, i))
+ 
+
+    def is_right_point_0(self, base_point, i) -> Point:
+        p = self.get_right_point(base_point, i)
+        return p.is_0
+    def is_left_point_0(self, base_point, i) -> Point:
+        p = self.get_left_point(base_point, i)
+        return p.is_0
+    def is_top_point_0(self, base_point, i) -> Point:
+        p = self.get_top_point(base_point, i)
+        return p.is_0
+    def is_bottom_point_0(self, base_point, i) -> Point:
+        p = self.get_bottom_point(base_point, i)
+        return p.is_0
+    def is_top_right_point_0(self, base_point, i) -> Point:
+        p = self.get_top_right_point(base_point, i)
+        return p.is_0
+    def is_bottom_right_point_0(self, base_point, i) -> Point:
+        p = self.get_bottom_right_point(base_point, i)
+        return p.is_0
+    def is_top_left_point_0(self, base_point, i) -> Point:
+        p = self.get_top_left_point(base_point,i)
+        return p.is_0
+    def is_bottom_left_point_0(self, base_point, i) -> Point:
+        p = self.get_bottom_left_point(base_point, i)
+        return p.is_0
+
+
+    def get_top_point(self, base_point, i) -> Point:
+        p = base_point.get_top_point(i)
+        return self.get_point(p)
+    def get_right_point(self, base_point, i) -> Point:
+        p = base_point.get_right_point(i)
+        return self.get_point(p)
+    def get_left_point(self, base_point, i) -> Point:
+        p = base_point.get_left_point(i)
+        return self.get_point(p)
+    def get_bottom_point(self, base_point, i) -> Point:
+        p = base_point.get_bottom_point(i)
+        return self.get_point(p)
+    def get_top_left_point(self, base_point, i) -> Point:
+        p = base_point.get_top_left_point(i)
+        return self.get_point(p)
+    def get_bottom_right_point(self, base_point, i) -> Point:
+        p = base_point.get_bottom_right_point(i)
+        return self.get_point(p)
+    def get_top_right_point(self, base_point, i) -> Point:
+        p = base_point.get_top_right_point(i)
+        return self.get_point(p)
+    def get_bottom_right_point(self, base_point, i) -> Point:
+        p = base_point.get_bottom_right_point(i)
+        return self.get_point(p)
+>>>>>>> Stashed changes

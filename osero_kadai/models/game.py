@@ -31,7 +31,6 @@ class Game():
         self.mode_game= ModeGame.CPU
         self.mode_turn= ModeTurn.FIRST
 
-
     @property
     def set_up_mode_and_turn(self):
         self._choose_mode
