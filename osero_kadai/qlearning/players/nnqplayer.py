@@ -73,26 +73,26 @@ class Quantity:
         state_tensor = torch.tensor(state, dtype=torch.float32)
         next_state_tensor = torch.tensor(next_state, dtype=torch.float32)
 
-        """
         #target_netwarkの更新はこちらの決めたタイミングで行う為
         with torch.no_grad():
             target_q_values = self.target_model(next_state_tensor)
         """
         target_q_values = self.model(next_state_tensor)
+        """
         q_values = self.model(state_tensor)
 
         action = action[0] * 4 + action[1]
         target = reward + self.gamma * torch.max(target_q_values)
-        
+        """
         loss = self.mse_loss(q_values[action], target * self.alpha)
-
         """
+        
         loss = huber_loss(q_values[action], target*self.alpha, delta=1.0)
-        """
+        
 
         self.loss += loss
         self.count += 1
-
+        """
         if (is_game_over == True)|(self.count%self.RANDOM == 0):
             self.loss_print.append(float(loss))
             self.loss = self.loss
@@ -110,11 +110,10 @@ class Quantity:
             self.loss.backward()
             self.optimizer.step()
             self.loss = 0
-        """
-        """
+        
         if ((self.count%self.UPDATE_COUNT) == 0):
             self.update_target_network
-        """
+        
     # target_modelのパラメータをmodelと同期
     @property
     def update_target_network(self):
@@ -211,11 +210,13 @@ class NNQPlayer:
            fs,fa = self._get_feature_state_and_acts(board, cpu)
            reward = self._get_reward(board)
            is_game_over = board.is_game_over
+           """
            # passしていない場合のみ学習
            if (self._last_move != None)&(self.battle_mode == 'off'):
                self.learn(self._last_board, self._last_move, reward, fs, fa, is_game_over)
           
            """
+
            # passしていない場合のみ追加
            if (self._last_move != None)&(self.battle_mode == 'off'):
                self.replay_buffer.add((self._last_board, self._last_move, reward, fs, fa, is_game_over))
@@ -226,7 +227,7 @@ class NNQPlayer:
 
                 for experience in replay_batch:
                     self.learn(*experience)
-           """
+           
            if is_game_over == False:
                self._action_count += 1
                self._last_move = None
