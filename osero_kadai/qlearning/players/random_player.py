@@ -23,5 +23,5 @@ class RandomPlayer():
       def random_choice(self, positions=[]):
           return random.choice(positions)
 
-      def getGameResult(self, board_data, ava_list, get_next_board=None, is_continue=True, win_color=1):
+      def getGameResult(self, board_data, player):
           pass

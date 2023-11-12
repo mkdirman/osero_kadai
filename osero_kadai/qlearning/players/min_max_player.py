@@ -107,7 +107,7 @@ class MinmaxPlayer:
                     result -= weight[x][y]
 
         return result
-    def getGameResult(self, board, p2):
+    def getGameResult(self, board, p2,):
         pass
 
 

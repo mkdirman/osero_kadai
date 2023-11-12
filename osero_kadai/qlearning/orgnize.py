@@ -43,15 +43,23 @@ class Organizer:
                 p1.getGameResult(board.board, p2)
 
                 (p1, p2) = (p2, p1)
-
+                
             self._count_result(board)
             self._print_progress(player1,player2,i)
+
+            if (i%200) == 0:
+                print(str(i)+'試合目')
+                player1.print_loss
+        #return player1,player2
 
     def _print_progress(self, player1 : QPlayer, player2:QPlayer, i:int):
         if self._nplay > 1 and i % self._stat == 0:
             print("Win count, player1(%s): %d, player2(%s): %d, draw: %d" % (
                  player1.name, self.player1_win_count, player2.name, self.player2_win_count, self.draw_count))
-            #print(player1.q._values )
+            self.player1_win_count=0
+            self.player2_win_count=0
+            self.draw_count=0
+
 
     def _print_winner(self, winner, loser, winner_count, loser_count):
         if self._show_result:

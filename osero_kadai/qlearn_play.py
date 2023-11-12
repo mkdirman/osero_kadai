@@ -1,21 +1,180 @@
+from qlearning.players.nnqplayer import NNQPlayer
 from qlearning.players.qplayer import QPlayer
 from qlearning.players.random_player import RandomPlayer
 from qlearning.players.min_max_player import MinmaxPlayer
 from qlearning.orgnize import Organizer
+import random
+import torch
+
+seed = 100
+torch.manual_seed(seed)
 
 
-p1 = QPlayer(1)
-p2 = QPlayer(-1)
+p1 = NNQPlayer(1)
+p2 = MinmaxPlayer(-1)
 
-organizer = Organizer(nplay=10000, show_board=False, show_result=False)
+organizer = Organizer(nplay=20000, show_board=False, show_result=False)
 organizer.play_game(p1, p2)
-
+#print(p1.q._values)
 
 p1.change_to_battle_mode
 p2 = MinmaxPlayer(-1)
 
+
 organizer = Organizer(nplay=10000, show_board=False, show_result=False)
 organizer.play_game(p1, p2)
+"""
+experience replay 無しの学習(上手くいくとき)1パターン
+
+in count, player1(ql): 0, player2(minmax): 1, draw: 0
+0試合目
+Win count, player1(ql): 52, player2(minmax): 47, draw: 1
+Win count, player1(ql): 44, player2(minmax): 48, draw: 8
+Win count, player1(ql): 69, player2(minmax): 26, draw: 5
+Win count, player1(ql): 31, player2(minmax): 68, draw: 1
+Win count, player1(ql): 19, player2(minmax): 81, draw: 0
+500試合目
+Win count, player1(ql): 24, player2(minmax): 76, draw: 0
+Win count, player1(ql): 20, player2(minmax): 80, draw: 0
+Win count, player1(ql): 29, player2(minmax): 70, draw: 1
+Win count, player1(ql): 26, player2(minmax): 74, draw: 0
+Win count, player1(ql): 63, player2(minmax): 35, draw: 2
+1000試合目
+Win count, player1(ql): 70, player2(minmax): 24, draw: 6
+Win count, player1(ql): 65, player2(minmax): 23, draw: 12
+Win count, player1(ql): 60, player2(minmax): 26, draw: 14
+Win count, player1(ql): 72, player2(minmax): 13, draw: 15
+Win count, player1(ql): 60, player2(minmax): 14, draw: 26
+1500試合目
+Win count, player1(ql): 62, player2(minmax): 29, draw: 9
+Win count, player1(ql): 66, player2(minmax): 27, draw: 7
+Win count, player1(ql): 61, player2(minmax): 20, draw: 19
+Win count, player1(ql): 54, player2(minmax): 31, draw: 15
+Win count, player1(ql): 65, player2(minmax): 26, draw: 9
+2000試合目
+Win count, player1(ql): 56, player2(minmax): 25, draw: 19
+Win count, player1(ql): 66, player2(minmax): 27, draw: 7
+Win count, player1(ql): 73, player2(minmax): 12, draw: 15
+Win count, player1(ql): 73, player2(minmax): 13, draw: 14
+Win count, player1(ql): 74, player2(minmax): 8, draw: 18
+2500試合目
+Win count, player1(ql): 64, player2(minmax): 18, draw: 18
+Win count, player1(ql): 64, player2(minmax): 19, draw: 17
+Win count, player1(ql): 64, player2(minmax): 14, draw: 22
+Win count, player1(ql): 56, player2(minmax): 10, draw: 34
+Win count, player1(ql): 60, player2(minmax): 10, draw: 30
+3000試合目
+Win count, player1(ql): 52, player2(minmax): 16, draw: 32
+Win count, player1(ql): 55, player2(minmax): 16, draw: 29
+Win count, player1(ql): 58, player2(minmax): 14, draw: 28
+Win count, player1(ql): 52, player2(minmax): 11, draw: 37
+Win count, player1(ql): 53, player2(minmax): 7, draw: 40
+
+→過学習？？？？急激に勝率が悪くなる
+
+3500試合目
+Win count, player1(ql): 48, player2(minmax): 21, draw: 31
+Win count, player1(ql): 17, player2(minmax): 75, draw: 8
+Win count, player1(ql): 9, player2(minmax): 72, draw: 19
+Win count, player1(ql): 11, player2(minmax): 87, draw: 2
+Win count, player1(ql): 26, player2(minmax): 58, draw: 16
+4000試合目
+Win count, player1(ql): 9, player2(minmax): 86, draw: 5
+Win count, player1(ql): 6, player2(minmax): 87, draw: 7
+Win count, player1(ql): 25, player2(minmax): 53, draw: 22
+Win count, player1(ql): 6, player2(minmax): 92, draw: 2
+Win count, player1(ql): 9, player2(minmax): 90, draw: 1
+"""
+"""
+experience replay 無しの学習(上手くいくとき)2例目
+
+Win count, player1(ql): 24, player2(minmax): 72, draw: 4
+Win count, player1(ql): 21, player2(minmax): 76, draw: 3
+Win count, player1(ql): 40, player2(minmax): 54, draw: 6
+Win count, player1(ql): 69, player2(minmax): 29, draw: 2
+Win count, player1(ql): 68, player2(minmax): 31, draw: 1
+Win count, player1(ql): 35, player2(minmax): 59, draw: 6
+Win count, player1(ql): 16, player2(minmax): 79, draw: 5
+Win count, player1(ql): 26, player2(minmax): 70, draw: 4
+Win count, player1(ql): 74, player2(minmax): 24, draw: 2
+Win count, player1(ql): 72, player2(minmax): 25, draw: 3
+Win count, player1(ql): 76, player2(minmax): 21, draw: 3
+Win count, player1(ql): 70, player2(minmax): 28, draw: 2
+Win count, player1(ql): 74, player2(minmax): 25, draw: 1
+Win count, player1(ql): 72, player2(minmax): 27, draw: 1
+Win count, player1(ql): 78, player2(minmax): 21, draw: 1
+Win count, player1(ql): 74, player2(minmax): 25, draw: 1
+Win count, player1(ql): 73, player2(minmax): 27, draw: 0
+Win count, player1(ql): 66, player2(minmax): 33, draw: 1
+Win count, player1(ql): 49, player2(minmax): 40, draw: 11
+Win count, player1(ql): 72, player2(minmax): 24, draw: 4
+
+→過学習？？？？やはり急に悪くなる
+
+Win count, player1(ql): 25, player2(minmax): 53, draw: 22
+Win count, player1(ql): 5, player2(minmax): 77, draw: 18
+Win count, player1(ql): 7, player2(minmax): 91, draw: 2
+Win count, player1(ql): 12, player2(minmax): 81, draw: 7
+Win count, player1(ql): 8, player2(minmax): 79, draw: 13
+Win count, player1(ql): 7, player2(minmax): 88, draw: 5
+Win count, player1(ql): 6, player2(minmax): 87, draw: 7
+Win count, player1(ql): 28, player2(minmax): 59, draw: 13
+Win count, player1(ql): 14, player2(minmax): 72, draw: 14
+"""
+
+"""
+fuber_lossの場合→微妙
+
+Win count, player1(ql): 0, player2(minmax): 1, draw: 0
+0試合目
+Win count, player1(ql): 27, player2(minmax): 65, draw: 8
+Win count, player1(ql): 28, player2(minmax): 70, draw: 2
+200試合目
+Win count, player1(ql): 40, player2(minmax): 49, draw: 11
+Win count, player1(ql): 32, player2(minmax): 66, draw: 2
+400試合目
+Win count, player1(ql): 30, player2(minmax): 60, draw: 10
+Win count, player1(ql): 21, player2(minmax): 70, draw: 9
+600試合目
+Win count, player1(ql): 38, player2(minmax): 58, draw: 4
+Win count, player1(ql): 38, player2(minmax): 54, draw: 8
+800試合目
+Win count, player1(ql): 31, player2(minmax): 63, draw: 6
+Win count, player1(ql): 40, player2(minmax): 55, draw: 5
+1000試合目
+Win count, player1(ql): 40, player2(minmax): 50, draw: 10
+Win count, player1(ql): 41, player2(minmax): 56, draw: 3
+1200試合目
+Win count, player1(ql): 37, player2(minmax): 57, draw: 6
+Win count, player1(ql): 30, player2(minmax): 63, draw: 7
+1400試合目
+Win count, player1(ql): 32, player2(minmax): 60, draw: 8
+Win count, player1(ql): 34, player2(minmax): 60, draw: 6
+1600試合目
+Win count, player1(ql): 25, player2(minmax): 67, draw: 8
+Win count, player1(ql): 33, player2(minmax): 61, draw: 6
+1800試合目
+Win count, player1(ql): 31, player2(minmax): 60, draw: 9
+Win count, player1(ql): 42, player2(minmax): 50, draw: 8
+2000試合目
+Win count, player1(ql): 28, player2(minmax): 65, draw: 7
+Win count, player1(ql): 22, player2(minmax): 71, draw: 7
+2200試合目
+Win count, player1(ql): 46, player2(minmax): 48, draw: 6
+Win count, player1(ql): 27, player2(minmax): 64, draw: 9
+2400試合目
+Win count, player1(ql): 33, player2(minmax): 62, draw: 5
+Win count, player1(ql): 33, player2(minmax): 61, draw: 6
+2600試合目
+Win count, player1(ql): 34, player2(minmax): 61, draw: 5
+Win count, player1(ql): 18, player2(minmax): 74, draw: 8
+2800試合目
+Win count, player1(ql): 33, player2(minmax): 58, draw: 9
+Win count, player1(ql): 41, player2(minmax): 51, draw: 8
+3000試合目
+Win count, player1(ql): 41, player2(minmax): 53, draw: 6
+Win count, player1(ql): 23, player2(minmax): 69, draw: 8
+"""
 
 """
 board:4*4
