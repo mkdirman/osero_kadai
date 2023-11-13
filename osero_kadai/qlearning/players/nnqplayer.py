@@ -70,19 +70,26 @@ class Quantity:
         return q_values[action]
 
     def update(self, state, action, reward, next_state , is_game_over ):
+        self.model.train()
         state_tensor = torch.tensor(state, dtype=torch.float32)
         next_state_tensor = torch.tensor(next_state, dtype=torch.float32)
 
         #target_netwarkの更新はこちらの決めたタイミングで行う為
         with torch.no_grad():
+            next_q_values = self.model(next_state_tensor)
+            next_action = torch.argmax(next_q_values)
+
             target_q_values = self.target_model(next_state_tensor)
+
+
+
         """
         target_q_values = self.model(next_state_tensor)
         """
         q_values = self.model(state_tensor)
 
         action = action[0] * 4 + action[1]
-        target = reward + self.gamma * torch.max(target_q_values)
+        target = reward + self.gamma * target_q_values[next_action]
         """
         loss = self.mse_loss(q_values[action], target * self.alpha)
         """
@@ -210,7 +217,7 @@ class NNQPlayer:
            fs,fa = self._get_feature_state_and_acts(board, cpu)
            reward = self._get_reward(board)
            is_game_over = board.is_game_over
-           """
+           
            # passしていない場合のみ学習
            if (self._last_move != None)&(self.battle_mode == 'off'):
                self.learn(self._last_board, self._last_move, reward, fs, fa, is_game_over)
@@ -227,7 +234,7 @@ class NNQPlayer:
 
                 for experience in replay_batch:
                     self.learn(*experience)
-           
+           """
            if is_game_over == False:
                self._action_count += 1
                self._last_move = None

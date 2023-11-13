@@ -50,6 +50,7 @@ class Organizer:
             if (i%200) == 0:
                 print(str(i)+'試合目')
                 player1.print_loss
+                player1.print_reward
         #return player1,player2
 
     def _print_progress(self, player1 : QPlayer, player2:QPlayer, i:int):
