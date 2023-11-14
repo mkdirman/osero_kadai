@@ -52,6 +52,7 @@ class Quantity:
     def __init__(self, model:model, target_model:model, alpha:float, gamma:float):
         self.model = model
         self.target_model = target_model
+
         self.alpha = alpha
         self.gamma = gamma
         self.optimizer = optim.Adam(self.model.parameters(), lr=alpha)
@@ -59,7 +60,9 @@ class Quantity:
 
         self.loss = 0
         self.count = 0
-        self.loss_print = []
+        self.rewards = 0
+        self.loss_list = []
+        self.reward_list = []
     
     def get(self, state, action):
         action = action[0]*4+action[1]
@@ -69,8 +72,9 @@ class Quantity:
         q_values = self.model(state_tensor)
         return q_values[action]
 
-    def update(self, state, action, reward, next_state , is_game_over ):
+    def update(self, state, action, reward, next_state, is_game_over:bool ,priority = None,get_priority_mode = False):
         self.model.train()
+
         state_tensor = torch.tensor(state, dtype=torch.float32)
         next_state_tensor = torch.tensor(next_state, dtype=torch.float32)
 
@@ -81,11 +85,10 @@ class Quantity:
 
             target_q_values = self.target_model(next_state_tensor)
 
-
-
         """
         target_q_values = self.model(next_state_tensor)
         """
+
         q_values = self.model(state_tensor)
 
         action = action[0] * 4 + action[1]
@@ -95,10 +98,16 @@ class Quantity:
         """
         
         loss = huber_loss(q_values[action], target*self.alpha, delta=1.0)
-        
 
+        if get_priority_mode == True:
+            priority = float(target-q_values[action])
+
+            return priority
+        
         self.loss += loss
         self.count += 1
+        self.rewards += reward
+
         """
         if (is_game_over == True)|(self.count%self.RANDOM == 0):
             self.loss_print.append(float(loss))
@@ -111,19 +120,22 @@ class Quantity:
 
         """
         if ((self.count%self.BATCH_SIZE) == 0):
-            self.loss_print.append(float(loss))
+            self.loss_list.append(float(self.loss/self.BATCH_SIZE))
+            self.reward_list.append(self.rewards)
 
             self.optimizer.zero_grad()
             self.loss.backward()
             self.optimizer.step()
             self.loss = 0
+            self.rewards = 0
         
         if ((self.count%self.UPDATE_COUNT) == 0):
-            self.update_target_network
+            self._update_target_network
+
         
     # target_modelのパラメータをmodelと同期
     @property
-    def update_target_network(self):
+    def _update_target_network(self):
         self.target_model.load_state_dict(self.model.state_dict())
 
 class ReplayBuffer:
@@ -137,7 +149,20 @@ class ReplayBuffer:
         self.buffer.append(experience)
 
     def sample(self, batch_size):
-        return random.sample(self.buffer, batch_size)
+        probs=self._make_priority_probs
+        indices = np.random.choice(len(self.buffer), batch_size, p=probs)
+        samples = [self.buffer[idx] for idx in indices]
+
+        return samples
+
+    @property
+    def _make_priority_probs(self):
+        priorities = np.array([exp[-1] for exp in self.buffer])
+        priorities = priorities - np.min(priorities)
+        probs = priorities / priorities.sum()
+
+        return probs
+
 
 class NNQPlayer:
       DEFAULT_E = 0.3
@@ -161,7 +186,6 @@ class NNQPlayer:
           return self._policy(board_data)
 
       def _policy(self, board_data) -> tuple[int,int] or None:
-
            self._last_board = deepcopy(board_data)
            board = ReversiBoard(board_data)
 
@@ -174,7 +198,6 @@ class NNQPlayer:
            return move
 
       def _e_greedy(self, positions:list) -> tuple[int,int]:
-
            if random.random() < (self._e / (self._action_count // 10000 + 1)):
                 move = random.choice(positions)
            else:
@@ -184,17 +207,13 @@ class NNQPlayer:
 
            return move
 
-
       def _get_best_move(self, positions:list) -> tuple[int,int]:
-
            qs = []
-
            for position in positions:
                qs.append(float(self.q.get(tuple(self._last_board.ravel()), position)))
 
            max_q = max(qs)
            #print('max_q:'+str(qs))
-                
            #qs.countで最大値の物が一個以上あった場合、ランダムに選択する
            if qs.count(max_q) > 1:
                 best_options = [i for i in range(len(positions)) if qs[i] == max_q]
@@ -206,39 +225,47 @@ class NNQPlayer:
 
            return move
 
-
-
       #fsを学習者が次に行動を選択する状態に設定する事がポイント
+      #*itemsでまとめない方がミスを発見しやすい？
       def getGameResult(self, board_data, opponent_player: RandomPlayer):
+           reward, fs, fa, is_game_over = self._get_qlearn_items(board_data, opponent_player)
+           self._set_experience_replay(reward, fs, fa, is_game_over)
+           self._do_experience_replay
+           
+           if is_game_over == False:
+               self._action_count += 1
+               self._last_move = None
+               self._last_board = None
 
+      def _get_qlearn_items(self,board_data, opponent_player: RandomPlayer):
            board = ReversiBoard(deepcopy(board_data))
            cpu = opponent_player
 
            fs,fa = self._get_feature_state_and_acts(board, cpu)
            reward = self._get_reward(board)
            is_game_over = board.is_game_over
-           
+
+           return reward, fs, fa, is_game_over
+      
+      def _set_experience_replay(self, reward, fs, fa, is_game_over):
+           if (self._last_move != None)&(self.battle_mode == 'off'):
+               priority = self.learn(self._last_board, self._last_move, reward, fs, fa, is_game_over,get_priority_mode = True)#get_priority_mode = Trueの時は学習無し
+               self.replay_buffer.add((self._last_board, self._last_move, reward, fs, fa, is_game_over, priority))
+
+           """
            # passしていない場合のみ学習
            if (self._last_move != None)&(self.battle_mode == 'off'):
                self.learn(self._last_board, self._last_move, reward, fs, fa, is_game_over)
           
            """
 
-           # passしていない場合のみ追加
-           if (self._last_move != None)&(self.battle_mode == 'off'):
-               self.replay_buffer.add((self._last_board, self._last_move, reward, fs, fa, is_game_over))
-           
-            # Experience Replayの実行
+      @property
+      def _do_experience_replay(self):
            if len(self.replay_buffer.buffer) >= self.replay_batch_size:
-                replay_batch = self.replay_buffer.sample(self.replay_batch_size)
+               replay_batch = self.replay_buffer.sample(self.replay_batch_size)
 
-                for experience in replay_batch:
-                    self.learn(*experience)
-           """
-           if is_game_over == False:
-               self._action_count += 1
-               self._last_move = None
-               self._last_board = None
+               for experience in replay_batch:
+                   self.learn(*experience)
 
       def _get_feature_state_and_acts(self, board: ReversiBoard, cpu: RandomPlayer):
           if board.get_available_list(cpu.color) == []:
@@ -266,8 +293,8 @@ class NNQPlayer:
 
           return reward
 
-      def learn(self, state, action, reward, next_state, fa, is_game_over):
-          self.q.update(state, action, reward, next_state, is_game_over)
+      def learn(self, state, action, reward, next_state, fa, is_game_over, prime = None, get_priority_mode=False):
+          return self.q.update(state, action, reward, next_state, is_game_over, None, get_priority_mode)
 
       @property
       def change_to_battle_mode(self):
@@ -276,9 +303,21 @@ class NNQPlayer:
 
       @property
       def print_loss(self):
-          y = self.q.loss_print
+          y = self.q.loss_list
           x = np.arange(len(y))
           
           plt.plot(x,y)
-          plt.ylim(0,0.3)
+          #plt.ylim(0)
+          plt.xlabel('update_p')
+          plt.ylabel('batch_loss')
+          plt.show()
+
+      @property
+      def print_reward(self):
+          y = self.q.reward_list
+          x = np.arange(len(y))
+          
+          plt.plot(x,y)
+          plt.xlabel('update_p')
+          plt.ylabel('batch_reward')
           plt.show()

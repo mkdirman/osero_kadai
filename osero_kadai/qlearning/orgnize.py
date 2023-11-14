@@ -61,7 +61,6 @@ class Organizer:
             self.player2_win_count=0
             self.draw_count=0
 
-
     def _print_winner(self, winner, loser, winner_count, loser_count):
         if self._show_result:
             if winner_count == loser_count:

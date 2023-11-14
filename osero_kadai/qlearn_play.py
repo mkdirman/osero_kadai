@@ -24,6 +24,258 @@ p2 = MinmaxPlayer(-1)
 organizer = Organizer(nplay=10000, show_board=False, show_result=False)
 organizer.play_game(p1, p2)
 """
+experience replay (優先度付き)
+↑学習が進んでいないものを優先して学習していく
+
+Win count, player1(ql): 1, player2(minmax): 0, draw: 0
+0試合目
+Win count, player1(ql): 38, player2(minmax): 62, draw: 0
+Win count, player1(ql): 33, player2(minmax): 67, draw: 0
+200試合目
+Win count, player1(ql): 13, player2(minmax): 86, draw: 1
+Win count, player1(ql): 11, player2(minmax): 89, draw: 0
+400試合目
+Win count, player1(ql): 20, player2(minmax): 80, draw: 0
+Win count, player1(ql): 20, player2(minmax): 80, draw: 0
+600試合目
+Win count, player1(ql): 14, player2(minmax): 85, draw: 1
+Win count, player1(ql): 23, player2(minmax): 76, draw: 1
+800試合目
+Win count, player1(ql): 21, player2(minmax): 75, draw: 4
+Win count, player1(ql): 18, player2(minmax): 82, draw: 0
+1000試合目
+Win count, player1(ql): 23, player2(minmax): 73, draw: 4
+Win count, player1(ql): 19, player2(minmax): 77, draw: 4
+1200試合目
+Win count, player1(ql): 17, player2(minmax): 81, draw: 2
+Win count, player1(ql): 13, player2(minmax): 87, draw: 0
+1400試合目
+Win count, player1(ql): 16, player2(minmax): 83, draw: 1
+Win count, player1(ql): 17, player2(minmax): 80, draw: 3
+1600試合目
+Win count, player1(ql): 23, player2(minmax): 75, draw: 2
+Win count, player1(ql): 10, player2(minmax): 88, draw: 2
+1800試合目
+Win count, player1(ql): 19, player2(minmax): 80, draw: 1
+Win count, player1(ql): 18, player2(minmax): 80, draw: 2
+2000試合目
+Win count, player1(ql): 15, player2(minmax): 81, draw: 4
+Win count, player1(ql): 18, player2(minmax): 79, draw: 3
+2200試合目
+Win count, player1(ql): 58, player2(minmax): 42, draw: 0
+Win count, player1(ql): 62, player2(minmax): 37, draw: 1
+2400試合目
+Win count, player1(ql): 55, player2(minmax): 44, draw: 1
+Win count, player1(ql): 63, player2(minmax): 34, draw: 3
+2600試合目
+Win count, player1(ql): 61, player2(minmax): 38, draw: 1
+Win count, player1(ql): 61, player2(minmax): 36, draw: 3
+2800試合目
+Win count, player1(ql): 54, player2(minmax): 45, draw: 1
+Win count, player1(ql): 44, player2(minmax): 55, draw: 1
+3000試合目
+Win count, player1(ql): 61, player2(minmax): 37, draw: 2
+Win count, player1(ql): 53, player2(minmax): 47, draw: 0
+3200試合目
+Win count, player1(ql): 56, player2(minmax): 44, draw: 0
+Win count, player1(ql): 57, player2(minmax): 43, draw: 0
+3400試合目
+Win count, player1(ql): 57, player2(minmax): 42, draw: 1
+Win count, player1(ql): 45, player2(minmax): 51, draw: 4
+3600試合目
+Win count, player1(ql): 49, player2(minmax): 49, draw: 2
+Win count, player1(ql): 51, player2(minmax): 46, draw: 3
+3800試合目
+Win count, player1(ql): 44, player2(minmax): 54, draw: 2
+Win count, player1(ql): 46, player2(minmax): 53, draw: 1
+4000試合目
+Win count, player1(ql): 45, player2(minmax): 49, draw: 6
+Win count, player1(ql): 44, player2(minmax): 56, draw: 0
+4200試合目
+Win count, player1(ql): 49, player2(minmax): 50, draw: 1
+Win count, player1(ql): 52, player2(minmax): 47, draw: 1
+4400試合目
+Win count, player1(ql): 49, player2(minmax): 50, draw: 1
+Win count, player1(ql): 49, player2(minmax): 50, draw: 1
+4600試合目
+Win count, player1(ql): 46, player2(minmax): 52, draw: 2
+Win count, player1(ql): 50, player2(minmax): 50, draw: 0
+4800試合目
+Win count, player1(ql): 47, player2(minmax): 51, draw: 2
+Win count, player1(ql): 49, player2(minmax): 50, draw: 1
+5000試合目
+Win count, player1(ql): 50, player2(minmax): 49, draw: 1
+Win count, player1(ql): 51, player2(minmax): 48, draw: 1
+5200試合目
+Win count, player1(ql): 47, player2(minmax): 51, draw: 2
+Win count, player1(ql): 48, player2(minmax): 50, draw: 2
+5400試合目
+Win count, player1(ql): 52, player2(minmax): 46, draw: 2
+Win count, player1(ql): 53, player2(minmax): 45, draw: 2
+5600試合目
+Win count, player1(ql): 53, player2(minmax): 45, draw: 2
+Win count, player1(ql): 51, player2(minmax): 47, draw: 2
+5800試合目
+Win count, player1(ql): 48, player2(minmax): 49, draw: 3
+Win count, player1(ql): 52, player2(minmax): 48, draw: 0
+6000試合目
+Win count, player1(ql): 50, player2(minmax): 48, draw: 2
+Win count, player1(ql): 47, player2(minmax): 52, draw: 1
+6200試合目
+Win count, player1(ql): 48, player2(minmax): 52, draw: 0
+Win count, player1(ql): 47, player2(minmax): 53, draw: 0
+6400試合目
+Win count, player1(ql): 44, player2(minmax): 55, draw: 1
+Win count, player1(ql): 51, player2(minmax): 48, draw: 1
+6600試合目
+Win count, player1(ql): 49, player2(minmax): 49, draw: 2
+Win count, player1(ql): 46, player2(minmax): 52, draw: 2
+6800試合目
+Win count, player1(ql): 48, player2(minmax): 51, draw: 1
+Win count, player1(ql): 46, player2(minmax): 54, draw: 0
+7000試合目
+Win count, player1(ql): 46, player2(minmax): 51, draw: 3
+Win count, player1(ql): 46, player2(minmax): 51, draw: 3
+7200試合目
+Win count, player1(ql): 53, player2(minmax): 45, draw: 2
+Win count, player1(ql): 52, player2(minmax): 47, draw: 1
+7400試合目
+Win count, player1(ql): 47, player2(minmax): 51, draw: 2
+Win count, player1(ql): 48, player2(minmax): 52, draw: 0
+7600試合目
+Win count, player1(ql): 49, player2(minmax): 48, draw: 3
+Win count, player1(ql): 51, player2(minmax): 49, draw: 0
+7800試合目
+Win count, player1(ql): 49, player2(minmax): 51, draw: 0
+Win count, player1(ql): 50, player2(minmax): 49, draw: 1
+8000試合目
+Win count, player1(ql): 50, player2(minmax): 50, draw: 0
+Win count, player1(ql): 50, player2(minmax): 49, draw: 1
+8200試合目
+Win count, player1(ql): 48, player2(minmax): 50, draw: 2
+Win count, player1(ql): 51, player2(minmax): 48, draw: 1
+8400試合目
+Win count, player1(ql): 49, player2(minmax): 51, draw: 0
+Win count, player1(ql): 49, player2(minmax): 50, draw: 1
+8600試合目
+Win count, player1(ql): 50, player2(minmax): 47, draw: 3
+Win count, player1(ql): 46, player2(minmax): 51, draw: 3
+8800試合目
+Win count, player1(ql): 50, player2(minmax): 48, draw: 2
+Win count, player1(ql): 49, player2(minmax): 51, draw: 0
+9000試合目
+Win count, player1(ql): 48, player2(minmax): 52, draw: 0
+Win count, player1(ql): 52, player2(minmax): 48, draw: 0
+9200試合目
+Win count, player1(ql): 49, player2(minmax): 50, draw: 1
+
+→過学習
+
+Win count, player1(ql): 8, player2(minmax): 92, draw: 0
+9400試合目
+Win count, player1(ql): 7, player2(minmax): 93, draw: 0
+Win count, player1(ql): 4, player2(minmax): 96, draw: 0
+9600試合目
+Win count, player1(ql): 3, player2(minmax): 96, draw: 1
+Win count, player1(ql): 5, player2(minmax): 95, draw: 0
+9800試合目
+Win count, player1(ql): 8, player2(minmax): 92, draw: 0
+Win count, player1(ql): 4, player2(minmax): 96, draw: 0
+10000試合目
+Win count, player1(ql): 5, player2(minmax): 95, draw: 0
+Win count, player1(ql): 5, player2(minmax): 95, draw: 0
+
+"""
+
+"""
+experience replay(優先度付き2)
+
+Win count, player1(ql): 1, player2(minmax): 0, draw: 0
+0試合目
+Win count, player1(ql): 16, player2(minmax): 72, draw: 12
+Win count, player1(ql): 35, player2(minmax): 58, draw: 7
+200試合目
+Win count, player1(ql): 24, player2(minmax): 70, draw: 6
+Win count, player1(ql): 31, player2(minmax): 63, draw: 6
+400試合目
+Win count, player1(ql): 36, player2(minmax): 58, draw: 6
+Win count, player1(ql): 22, player2(minmax): 72, draw: 6
+600試合目
+Win count, player1(ql): 39, player2(minmax): 55, draw: 6
+Win count, player1(ql): 27, player2(minmax): 64, draw: 9
+800試合目
+Win count, player1(ql): 31, player2(minmax): 61, draw: 8
+Win count, player1(ql): 35, player2(minmax): 55, draw: 10
+1000試合目
+Win count, player1(ql): 33, player2(minmax): 60, draw: 7
+Win count, player1(ql): 38, player2(minmax): 53, draw: 9
+1200試合目
+Win count, player1(ql): 45, player2(minmax): 45, draw: 10
+Win count, player1(ql): 40, player2(minmax): 53, draw: 7
+1400試合目
+Win count, player1(ql): 30, player2(minmax): 59, draw: 11
+Win count, player1(ql): 39, player2(minmax): 47, draw: 14
+1600試合目
+Win count, player1(ql): 33, player2(minmax): 56, draw: 11
+Win count, player1(ql): 14, player2(minmax): 77, draw: 9
+1800試合目
+Win count, player1(ql): 14, player2(minmax): 79, draw: 7
+Win count, player1(ql): 18, player2(minmax): 71, draw: 11
+2000試合目
+Win count, player1(ql): 7, player2(minmax): 84, draw: 9
+Win count, player1(ql): 9, player2(minmax): 84, draw: 7
+2200試合目
+Win count, player1(ql): 9, player2(minmax): 85, draw: 6
+Win count, player1(ql): 68, player2(minmax): 27, draw: 5
+2400試合目
+Win count, player1(ql): 64, player2(minmax): 31, draw: 5
+Win count, player1(ql): 51, player2(minmax): 41, draw: 8
+2600試合目
+Win count, player1(ql): 69, player2(minmax): 26, draw: 5
+Win count, player1(ql): 50, player2(minmax): 46, draw: 4
+2800試合目
+Win count, player1(ql): 54, player2(minmax): 36, draw: 10
+Win count, player1(ql): 46, player2(minmax): 42, draw: 12
+3000試合目
+Win count, player1(ql): 61, player2(minmax): 32, draw: 7
+Win count, player1(ql): 62, player2(minmax): 33, draw: 5
+3200試合目
+Win count, player1(ql): 52, player2(minmax): 43, draw: 5
+Win count, player1(ql): 52, player2(minmax): 43, draw: 5
+3400試合目
+Win count, player1(ql): 58, player2(minmax): 34, draw: 8
+Win count, player1(ql): 61, player2(minmax): 31, draw: 8
+3600試合目
+Win count, player1(ql): 37, player2(minmax): 51, draw: 12
+Win count, player1(ql): 53, player2(minmax): 38, draw: 9
+3800試合目
+Win count, player1(ql): 52, player2(minmax): 41, draw: 7
+
+→過学習
+
+Win count, player1(ql): 11, player2(minmax): 82, draw: 7
+4000試合目
+Win count, player1(ql): 3, player2(minmax): 94, draw: 3
+Win count, player1(ql): 4, player2(minmax): 85, draw: 11
+4200試合目
+Win count, player1(ql): 7, player2(minmax): 82, draw: 11
+Win count, player1(ql): 3, player2(minmax): 93, draw: 4
+4400試合目
+Win count, player1(ql): 1, player2(minmax): 93, draw: 6
+Win count, player1(ql): 1, player2(minmax): 91, draw: 8
+4600試合目
+Win count, player1(ql): 1, player2(minmax): 93, draw: 6
+Win count, player1(ql): 0, player2(minmax): 94, draw: 6
+4800試合目
+Win count, player1(ql): 0, player2(minmax): 94, draw: 6
+Win count, player1(ql): 0, player2(minmax): 95, draw: 5
+5000試合目
+Win count, player1(ql): 1, player2(minmax): 93, draw: 6
+Win count, player1(ql): 3, player2(minmax): 91, draw: 6
+
+"""
+
+"""
 experience replay 無しの学習(上手くいくとき)1パターン
 
 in count, player1(ql): 0, player2(minmax): 1, draw: 0
