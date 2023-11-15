@@ -47,7 +47,7 @@ class Organizer:
             self._count_result(board)
             self._print_progress(player1,player2,i)
 
-            if (i%200) == 0:
+            if (i%10000) == 0:
                 print(str(i)+'試合目')
                 player1.print_loss
                 player1.print_reward

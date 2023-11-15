@@ -9,11 +9,10 @@ import torch
 seed = 100
 torch.manual_seed(seed)
 
-
 p1 = NNQPlayer(1)
 p2 = MinmaxPlayer(-1)
 
-organizer = Organizer(nplay=20000, show_board=False, show_result=False)
+organizer = Organizer(nplay=4000, show_board=False, show_result=False)
 organizer.play_game(p1, p2)
 #print(p1.q._values)
 
@@ -23,6 +22,44 @@ p2 = MinmaxPlayer(-1)
 
 organizer = Organizer(nplay=10000, show_board=False, show_result=False)
 organizer.play_game(p1, p2)
+
+
+"""
+Dualing DQN(状態によってのみ決まるものと(s,a)によって決まるものを分けて学習する手法)
+
+→安定して学習がはやい
+
+Win count, player1(ql): 0, player2(minmax): 1, draw: 0
+0試合目
+Win count, player1(ql): 39, player2(minmax): 61, draw: 0
+Win count, player1(ql): 13, player2(minmax): 86, draw: 1
+Win count, player1(ql): 19, player2(minmax): 80, draw: 1
+Win count, player1(ql): 27, player2(minmax): 72, draw: 1
+Win count, player1(ql): 51, player2(minmax): 48, draw: 1
+Win count, player1(ql): 53, player2(minmax): 43, draw: 4
+Win count, player1(ql): 57, player2(minmax): 38, draw: 5
+Win count, player1(ql): 63, player2(minmax): 34, draw: 3
+
+Win count, player1(ql): 62, player2(minmax): 35, draw: 3
+Win count, player1(ql): 49, player2(minmax): 49, draw: 2
+Win count, player1(ql): 51, player2(minmax): 45, draw: 4
+Win count, player1(ql): 40, player2(minmax): 55, draw: 5
+Win count, player1(ql): 50, player2(minmax): 48, draw: 2
+Win count, player1(ql): 49, player2(minmax): 47, draw: 4
+Win count, player1(ql): 50, player2(minmax): 47, draw: 3
+Win count, player1(ql): 46, player2(minmax): 50, draw: 4
+Win count, player1(ql): 53, player2(minmax): 44, draw: 3
+Win count, player1(ql): 49, player2(minmax): 44, draw: 7
+Win count, player1(ql): 47, player2(minmax): 51, draw: 2
+Win count, player1(ql): 48, player2(minmax): 50, draw: 2
+Win count, player1(ql): 52, player2(minmax): 45, draw: 3
+Win count, player1(ql): 52, player2(minmax): 47, draw: 1
+Win count, player1(ql): 49, player2(minmax): 49, draw: 2
+Win count, player1(ql): 52, player2(minmax): 46, draw: 2
+Win count, player1(ql): 48, player2(minmax): 51, draw: 1
+
+
+"""
 """
 experience replay (優先度付き)
 ↑学習が進んでいないものを優先して学習していく

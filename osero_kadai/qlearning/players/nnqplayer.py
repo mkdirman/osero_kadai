@@ -17,14 +17,20 @@ class model(nn.Module):
 
         self.fc1 = nn.Linear(input_size, 64)
         self.fc2 = nn.Linear(64, 64)
-        self.fc3 = nn.Linear(64, output_size)
+        self.fc3_adv = nn.Linear(64, output_size)
+        self.fc3_v = nn.Linear(64,1)
 
     def forward(self, x):
 
         x = x.flatten()
         x = torch.relu(self.fc1(x))
         x = torch.relu(self.fc2(x))
-        x = self.fc3(x)
+
+        adv = self.fc3_adv(x)
+        val = self.fc3_v(x).expand(adv.size())
+
+        x = val + adv - adv.mean(0,keepdim = True)
+
 
         return x
 
@@ -38,7 +44,6 @@ def huber_loss(y_true:float, y_pred:float, delta=1.0):
     quadratic_error = 0.5 * error**2
 
     mask = absolute_error < delta
-
     # フーバー損失を計算
     loss = torch.where(mask, quadratic_error, delta * (absolute_error - 0.5 * delta))
 
@@ -51,6 +56,7 @@ class Quantity:
 
     def __init__(self, model:model, target_model:model, alpha:float, gamma:float):
         self.model = model
+        self.model.train()
         self.target_model = target_model
 
         self.alpha = alpha
@@ -73,7 +79,6 @@ class Quantity:
         return q_values[action]
 
     def update(self, state, action, reward, next_state, is_game_over:bool ,priority = None,get_priority_mode = False):
-        self.model.train()
 
         state_tensor = torch.tensor(state, dtype=torch.float32)
         next_state_tensor = torch.tensor(next_state, dtype=torch.float32)
@@ -119,6 +124,7 @@ class Quantity:
             self.loss = 0
 
         """
+
         if ((self.count%self.BATCH_SIZE) == 0):
             self.loss_list.append(float(self.loss/self.BATCH_SIZE))
             self.reward_list.append(self.rewards)
@@ -132,7 +138,6 @@ class Quantity:
         if ((self.count%self.UPDATE_COUNT) == 0):
             self._update_target_network
 
-        
     # target_modelのパラメータをmodelと同期
     @property
     def _update_target_network(self):
@@ -162,7 +167,6 @@ class ReplayBuffer:
         probs = priorities / priorities.sum()
 
         return probs
-
 
 class NNQPlayer:
       DEFAULT_E = 0.3
@@ -229,8 +233,10 @@ class NNQPlayer:
       #*itemsでまとめない方がミスを発見しやすい？
       def getGameResult(self, board_data, opponent_player: RandomPlayer):
            reward, fs, fa, is_game_over = self._get_qlearn_items(board_data, opponent_player)
-           self._set_experience_replay(reward, fs, fa, is_game_over)
-           self._do_experience_replay
+
+           if self.battle_mode == 'off':
+               self._set_experience_replay(reward, fs, fa, is_game_over)
+               self._do_experience_replay
            
            if is_game_over == False:
                self._action_count += 1
@@ -248,7 +254,7 @@ class NNQPlayer:
            return reward, fs, fa, is_game_over
       
       def _set_experience_replay(self, reward, fs, fa, is_game_over):
-           if (self._last_move != None)&(self.battle_mode == 'off'):
+           if (self._last_move != None):
                priority = self.learn(self._last_board, self._last_move, reward, fs, fa, is_game_over,get_priority_mode = True)#get_priority_mode = Trueの時は学習無し
                self.replay_buffer.add((self._last_board, self._last_move, reward, fs, fa, is_game_over, priority))
 
@@ -299,7 +305,8 @@ class NNQPlayer:
       @property
       def change_to_battle_mode(self):
           self._e = 0
-          self.battle_mode = 'on'
+          #self.q.model.eval()
+          #self.battle_mode = 'on'
 
       @property
       def print_loss(self):
@@ -307,7 +314,6 @@ class NNQPlayer:
           x = np.arange(len(y))
           
           plt.plot(x,y)
-          #plt.ylim(0)
           plt.xlabel('update_p')
           plt.ylabel('batch_loss')
           plt.show()
