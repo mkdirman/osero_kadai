@@ -6,8 +6,6 @@ import matplotlib.pyplot as plt
 from qlearning.board import ReversiBoard
 from qlearning.players.random_player import RandomPlayer
 
-import warnings
-import pandas as pd
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -36,13 +34,20 @@ class model(nn.Module):
         x = torch.relu(self.fc1(x))
         x = torch.relu(self.fc2(x))
 
+        """
         adv = self.fc3_adv(x)
         val = self.fc3_v(x).expand(adv.size())
 
         x = val + adv - adv.mean(0,keepdim = True)
 
         return x
+        """
 
+        actor_output = self.softmax(self.actor_fc(x))
+
+        critic_output = self.critic_fc(x)
+
+        return actor_output, critic_output
 
 def huber_loss(y_true:float, y_pred:float, delta=1.0):
     """
@@ -81,19 +86,52 @@ class Quantity:
         self.reward_list = []
     
     def get(self, state, action):
+        action = action[0]*4+action[1]
+        state_tensor = torch.tensor(state, dtype=torch.float32)
 
+        actor, critic = self.model(state_tensor)
+
+        return float(actor[action])
+        """
         action = action[0]*4+action[1]
         action = torch.tensor(action)
         state_tensor = torch.tensor(state, dtype=torch.float32)
 
         q_values = self.model(state_tensor)
         return q_values[action]
-        
-    def update(self,state, action, reward, next_state, is_game_over, priority = None, get_priority_mode = False):
+        """
+
+    def update(self, state, action, reward, next_state, is_game_over:bool ,priority = None,get_priority_mode = False):
 
         state_tensor = torch.tensor(state, dtype=torch.float32)
         next_state_tensor = torch.tensor(next_state, dtype=torch.float32)
 
+        action = action[0] * 4 + action[1]
+
+        actor_output, state_value = self.model(state_tensor)
+        _, next_state_value = self.model(next_state_tensor)
+
+        # Advantageの計算
+        advantage = (reward + self.gamma * next_state_value - state_value)
+
+        # Actor-Criticの損失
+        actor_loss = -torch.log(actor_output[action]) * advantage
+        critic_loss = self.mse_loss(state_value, reward + self.gamma * next_state_value)
+        total_loss = actor_loss + critic_loss
+
+        if get_priority_mode == True:
+            if torch.isnan(advantage).any().item():
+                priority = 0.0001
+            else:
+                priority = float(advantage)
+            #print(priority)
+
+            return priority
+
+        self.loss += total_loss
+        self.count += 1
+        self.rewards += reward
+        """
         #target_netwarkの更新はこちらの決めたタイミングで行う為
         with torch.no_grad():
             next_q_values = self.model(next_state_tensor)
@@ -116,6 +154,19 @@ class Quantity:
         self.loss += loss
         self.count += 1
         self.rewards += reward
+        """
+
+        """
+        if (is_game_over == True)|(self.count%self.RANDOM == 0):
+            self.loss_print.append(float(loss))
+            self.loss = self.loss
+
+            self.optimizer.zero_grad()
+            self.loss.backward()
+            self.optimizer.step()
+            self.loss = 0
+
+        """
 
         if ((self.count%self.BATCH_SIZE) == 0):
             self.loss_list.append(float(self.loss/self.BATCH_SIZE))
@@ -135,58 +186,30 @@ class Quantity:
     def _update_target_network(self):
         self.target_model.load_state_dict(self.model.state_dict())
 
-
 class ReplayBuffer:
     def __init__(self, buffer_size:int):
         self.buffer_size = buffer_size
-        self.buffer = pd.DataFrame()
- 
+        self.buffer = []
+
     def add(self, experience):
-
-        if len(self.buffer) == 0:
-            self.buffer = pd.DataFrame([experience])
-            self.buffer.columns = ['s', 'a' , 'reward', 'next_s', 'next_a', 'is_gameover', 'priority']
-
-        else:
-        
-            index = self._get_reinput_index(experience)
-
-            if (any(index)):
-                with warnings.catch_warnings():
-                    warnings.simplefilter("ignore")
-                    self.buffer['priority'][index] = experience[-1]
-
-            else:
-                df = pd.DataFrame([experience])
-                df.columns = ['s', 'a' , 'reward', 'next_s', 'next_a', 'is_gameover', 'priority']
-
-                self.buffer = pd.concat([self.buffer, df], ignore_index=True)
+        if len(self.buffer) >= self.buffer_size:
+            self.buffer.pop(0)
+        self.buffer.append(experience)
 
     def sample(self, batch_size):
         probs=self._make_priority_probs
         indices = np.random.choice(len(self.buffer), batch_size, p=probs)
-        samples = [self.buffer.iloc[idx] for idx in indices]
+        samples = [self.buffer[idx] for idx in indices]
 
         return samples
 
     @property
     def _make_priority_probs(self):
-        #priorities = np.array([df['priority'] for i in range(len(self.buffer))])
-        priorities = self.buffer['priority']
+        priorities = np.array([exp[-1] for exp in self.buffer])
         priorities = priorities - np.min(priorities)
         probs = priorities / priorities.sum()
 
         return probs
-
-    @property
-    def _get_reinput_index(self,experience):
-        s_condition = np.array([np.array_equal(experience[0], tpl) for tpl in self.buffer['s'].values])
-        a_condition = np.array([np.array_equal(experience[1], tpl) for tpl in self.buffer['a'].values])
-        next_s_condition = np.array([np.array_equal(experience[3], tpl) for tpl in self.buffer['next_s'].values])
-        next_a_condition = np.array([np.array_equal(experience[4], tpl) for tpl in self.buffer['next_a'].values])
-
-        index = np.where(s_condition & a_condition & next_s_condition & next_a_condition)[0]
-        return index
 
 class NNQPlayer:
       DEFAULT_E = 0.3
@@ -244,7 +267,7 @@ class NNQPlayer:
                 i = random.choice(best_options)
            else:
                 i = qs.index(max_q)
-           
+
            move = positions[i]
 
            return move
@@ -274,16 +297,15 @@ class NNQPlayer:
            return reward, fs, fa, is_game_over
       
       def _set_experience_replay(self, reward, fs, fa, is_game_over):
-
-          
            if (self._last_move != None):
-               priority = self.learn(self._last_board, self._last_move, reward, fs, fa, is_game_over,priority = None,get_priority_mode = True)#get_priority_mode = Trueの時は学習無し
-               self.replay_buffer.add([self._last_board, self._last_move, reward, fs, fa, is_game_over, priority])
+               priority = self.learn(self._last_board, self._last_move, reward, fs, fa, is_game_over,get_priority_mode = True)#get_priority_mode = Trueの時は学習無し
+               self.replay_buffer.add((self._last_board, self._last_move, reward, fs, fa, is_game_over, priority))
 
            """
            # passしていない場合のみ学習
            if (self._last_move != None)&(self.battle_mode == 'off'):
                self.learn(self._last_board, self._last_move, reward, fs, fa, is_game_over)
+          
            """
 
       @property
@@ -320,8 +342,8 @@ class NNQPlayer:
 
           return reward
 
-      def learn(self, state, action, reward, next_state, fa, is_game_over, priority=None, get_priority_mode = False):
-          return self.q.update(state, action, reward, next_state, is_game_over,priority, get_priority_mode)
+      def learn(self, state, action, reward, next_state, fa, is_game_over, prime = None, get_priority_mode=False):
+          return self.q.update(state, action, reward, next_state, is_game_over, None, get_priority_mode)
 
       @property
       def change_to_battle_mode(self):

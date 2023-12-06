@@ -2,6 +2,7 @@ from qlearning.players.nnqplayer import NNQPlayer
 from qlearning.players.qplayer import QPlayer
 from qlearning.players.random_player import RandomPlayer
 from qlearning.players.min_max_player import MinmaxPlayer
+from qlearning.players.categorical_nnq import CategoricalNNQPlayer
 from qlearning.orgnize import Organizer
 import random
 import torch
@@ -9,7 +10,7 @@ import torch
 seed = 100
 torch.manual_seed(seed)
 
-p1 = NNQPlayer(1)
+p1 = CategoricalNNQPlayer(1)
 p2 = MinmaxPlayer(-1)
 
 organizer = Organizer(nplay=4000, show_board=False, show_result=False)

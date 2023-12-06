@@ -7,10 +7,11 @@ from qlearning.board import ReversiBoard
 from qlearning.players.random_player import RandomPlayer
 
 import warnings
-import pandas as pd
+import torch.nn.functional as F
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import pandas as pd
 
 
 class model(nn.Module):
@@ -22,13 +23,7 @@ class model(nn.Module):
         self.fc3_adv = nn.Linear(64, output_size)
         self.fc3_v = nn.Linear(64,1)
 
-        # Actorの出力層
-        self.actor_fc = nn.Linear(64, output_size)
-
-        # Criticの出力層
-        self.critic_fc = nn.Linear(64, 1)
-
-        self.softmax = nn.Softmax()
+        self.softmax = nn.Softmax(dim = 0)
 
     def forward(self, x):
 
@@ -40,6 +35,7 @@ class model(nn.Module):
         val = self.fc3_v(x).expand(adv.size())
 
         x = val + adv - adv.mean(0,keepdim = True)
+        x = self.softmax(x)
 
         return x
 
@@ -69,9 +65,18 @@ class Quantity:
         self.model.train()
         self.target_model = target_model
 
+        self.num_atoms = 16
+        self.vmin = -1
+        self.vmax = 1
+
+        self.delta_z = (self.vmax - self.vmin) / (self.num_atoms - 1)
+        self.z_values = torch.linspace(self.vmin, self.vmax, self.num_atoms)
+
         self.alpha = alpha
         self.gamma = gamma
         self.optimizer = optim.Adam(self.model.parameters(), lr=alpha)
+        #self.optimizer_pi = optim.Adam(self.target_model.parameters(), lr=alpha)
+
         self.mse_loss = torch.nn.MSELoss()
 
         self.loss = 0
@@ -87,9 +92,11 @@ class Quantity:
         state_tensor = torch.tensor(state, dtype=torch.float32)
 
         q_values = self.model(state_tensor)
+
         return q_values[action]
         
-    def update(self,state, action, reward, next_state, is_game_over, priority = None, get_priority_mode = False):
+
+    def update(self, state, action, reward, next_state, is_game_over:bool ,priority = None,get_priority_mode = False):
 
         state_tensor = torch.tensor(state, dtype=torch.float32)
         next_state_tensor = torch.tensor(next_state, dtype=torch.float32)
@@ -99,17 +106,22 @@ class Quantity:
             next_q_values = self.model(next_state_tensor)
             next_action = torch.argmax(next_q_values)
 
-            target_q_values = self.target_model(next_state_tensor)
+            #target_q_values = self.target_model(next_state_tensor)
 
         q_values = self.model(state_tensor)
 
         action = action[0] * 4 + action[1]
-        target = reward + self.gamma * target_q_values[next_action]
+        target = reward + self.gamma * self.z_values
 
-        loss = huber_loss(q_values[action], target, delta=1.0)
+        q_values = torch.sum(q_values * self.z_values, dim=-1)
+        target_probs = self.project_distribution(target, next_q_values, next_action)
+
+        loss = -torch.sum(target_probs * torch.log(q_values + 1e-5))
 
         if get_priority_mode == True:
-            priority = float(target-q_values[action])
+            priority = float(loss)
+            if torch.isnan(loss):
+                priority = 0.0001
 
             return priority
         
@@ -130,10 +142,67 @@ class Quantity:
         if ((self.count%self.UPDATE_COUNT) == 0):
             self._update_target_network
 
+    def project_distribution(self, target_values, next_q_values, next_action):
+        #targetを離散分布の限界に合わせてクランプする
+        target_values = torch.clamp(target_values, self.vmin, self.vmax)
+
+        #離散分布のスケールに変更
+        b = (target_values - self.vmin) / self.delta_z
+        #一つ一つの棒の上限と下限を決定
+        l = torch.floor(b).long()
+        u = torch.ceil(b).long()
+
+        proj_dist = torch.zeros_like(next_q_values)
+
+        #15分割した
+        for i in range(self.num_atoms):
+            #delta_zは棒の幅で、
+            
+            offset = i * self.delta_z
+
+            #棒の上限と下限を足して離散分布における棒を作成する(基準はi*幅)
+            l_offset = torch.clamp(l + offset, 0, self.num_atoms - 1)
+            u_offset = torch.clamp(u + offset, 0, self.num_atoms - 1)
+
+            #next_qがoffset(0.5,1.5,....)の一つ一つとどれくらい差異があるのかを計算してその結果から、次のq値に倍率をかけている
+            nu_minus_b = (next_q_values * (u.float() - b)).view(-1)
+            b_minus_l = (next_q_values * (b - l.float())).view(-1)
+
+            proj_dist.view(-1).index_add_(0, l_offset.view(-1).to(torch.long), nu_minus_b.view(-1))
+            proj_dist.view(-1).index_add_(0, u_offset.view(-1).to(torch.long), b_minus_l.view(-1))
+
+        #plt.scatter(x=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],y=proj_dist)
+        #plt.show()
+
+        return proj_dist
+    """
+    def project_distribution(self, target_values, next_q_values, next_action):
+        target_values = torch.clamp(target_values, self.vmin, self.vmax)
+        b = (target_values - self.vmin) / self.delta_z
+        l = torch.floor(b).long()
+        u = torch.ceil(b).long()
+
+        offset = torch.arange(0, (self.num_atoms) * self.delta_z, self.delta_z).long()
+
+        proj_dist = torch.zeros_like(next_q_values)
+
+        l_offset = (l + offset).view(-1)
+        u_offset = (u + offset).view(-1)
+
+        nu_minus_b = (next_q_values * (u.float() - b)).view(-1)
+        b_minus_l = (next_q_values * (b - l.float())).view(-1)
+
+        for i in range(len(l_offset)-1):
+            proj_dist[i] += nu_minus_b[i]
+            proj_dist[i] += b_minus_l[i]
+
+        return proj_dist
+    """
     # target_modelのパラメータをmodelと同期
     @property
     def _update_target_network(self):
         self.target_model.load_state_dict(self.model.state_dict())
+
 
 
 class ReplayBuffer:
@@ -148,14 +217,13 @@ class ReplayBuffer:
             self.buffer.columns = ['s', 'a' , 'reward', 'next_s', 'next_a', 'is_gameover', 'priority']
 
         else:
-        
+
             index = self._get_reinput_index(experience)
 
             if (any(index)):
                 with warnings.catch_warnings():
                     warnings.simplefilter("ignore")
                     self.buffer['priority'][index] = experience[-1]
-
             else:
                 df = pd.DataFrame([experience])
                 df.columns = ['s', 'a' , 'reward', 'next_s', 'next_a', 'is_gameover', 'priority']
@@ -178,7 +246,6 @@ class ReplayBuffer:
 
         return probs
 
-    @property
     def _get_reinput_index(self,experience):
         s_condition = np.array([np.array_equal(experience[0], tpl) for tpl in self.buffer['s'].values])
         a_condition = np.array([np.array_equal(experience[1], tpl) for tpl in self.buffer['a'].values])
@@ -188,13 +255,42 @@ class ReplayBuffer:
         index = np.where(s_condition & a_condition & next_s_condition & next_a_condition)[0]
         return index
 
-class NNQPlayer:
+"""
+class ReplayBuffer:
+    def __init__(self, buffer_size:int):
+        self.buffer_size = buffer_size
+        self.buffer = []
+
+    def add(self, experience):
+        if len(self.buffer) >= self.buffer_size:
+            self.buffer.pop(0)
+        self.buffer.append(experience)
+
+    def sample(self, batch_size):
+
+        probs = self._make_priority_probs
+        indices = np.random.choice(len(self.buffer), batch_size, p=probs)
+        samples = [self.buffer[idx] for idx in indices]
+
+        return samples
+
+    @property
+    def _make_priority_probs(self):
+        priorities = np.array([exp[-1] for exp in self.buffer])
+        
+        priorities = priorities - np.min(priorities)
+        probs = priorities / priorities.sum()
+
+        return probs
+"""
+
+class CategoricalNNQPlayer:
       DEFAULT_E = 0.3
 
-      def __init__(self, color, e=DEFAULT_E, alpha=1, replay_buffer_size=10000, replay_batch_size=32):
+      def __init__(self, color, e=DEFAULT_E, alpha=0.0005, replay_buffer_size=10000, replay_batch_size=32):
           self.color = color
           self.name = 'ql'
-          self.q = Quantity(model(),model(), alpha, 0.9)
+          self.q = Quantity(model(),model(), alpha, 0.7)
           self.next_q_list = []
           self._e = e
           self._action_count = 0
@@ -244,7 +340,7 @@ class NNQPlayer:
                 i = random.choice(best_options)
            else:
                 i = qs.index(max_q)
-           
+
            move = positions[i]
 
            return move
@@ -274,24 +370,25 @@ class NNQPlayer:
            return reward, fs, fa, is_game_over
       
       def _set_experience_replay(self, reward, fs, fa, is_game_over):
-
-          
            if (self._last_move != None):
-               priority = self.learn(self._last_board, self._last_move, reward, fs, fa, is_game_over,priority = None,get_priority_mode = True)#get_priority_mode = Trueの時は学習無し
-               self.replay_buffer.add([self._last_board, self._last_move, reward, fs, fa, is_game_over, priority])
+               priority = self.learn(self._last_board, self._last_move, reward, fs, fa, is_game_over,get_priority_mode = True)#get_priority_mode = Trueの時は学習無し
+               self.replay_buffer.add((self._last_board, self._last_move, reward, fs, fa, is_game_over, priority))
 
            """
            # passしていない場合のみ学習
            if (self._last_move != None)&(self.battle_mode == 'off'):
                self.learn(self._last_board, self._last_move, reward, fs, fa, is_game_over)
+          
            """
 
       @property
       def _do_experience_replay(self):
            if len(self.replay_buffer.buffer) >= self.replay_batch_size:
                replay_batch = self.replay_buffer.sample(self.replay_batch_size)
+               #self.learn(replay_batch)
 
                for experience in replay_batch:
+                  
                    self.learn(*experience)
 
       def _get_feature_state_and_acts(self, board: ReversiBoard, cpu: RandomPlayer):
@@ -320,8 +417,8 @@ class NNQPlayer:
 
           return reward
 
-      def learn(self, state, action, reward, next_state, fa, is_game_over, priority=None, get_priority_mode = False):
-          return self.q.update(state, action, reward, next_state, is_game_over,priority, get_priority_mode)
+      def learn(self, state, action, reward, next_state, fa, is_game_over, prime = None, get_priority_mode=False):
+          return self.q.update(state, action, reward, next_state, is_game_over, None, get_priority_mode)
 
       @property
       def change_to_battle_mode(self):
